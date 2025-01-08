@@ -232,6 +232,56 @@ public class ElementUtil {
         doClick(childLocator);
     }
 
+    /**
+     * This method is used for handling the dropdown menue for RMS Skill Master category dropdown as " Technical"
+     * @param parentLocator
+     * @throws InterruptedException
+     */
+    public void handleDropdownMenue(By parentLocator) throws InterruptedException {
+        Actions act = new Actions(driver);
+        doClick(parentLocator);// Clcking on dropdown
+        //act.moveToElement(getElement(parentLocator)).perform();
+        Thread.sleep(2000);
+        act.sendKeys("Technical").perform();
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+    }
+    /**
+     * This method is used for handling the dropdown menue for RMS Skill Master competency dropdown as "Competency from excel sheet"
+     * @param parentLocator
+     * @throws InterruptedException
+     */
+    public void handleCompetencyMenue(By parentLocator, String competency ) {
+        Actions act = new Actions(driver);
+        doClick(parentLocator);// Clcking on dropdown
+        //act.moveToElement(getElement(parentLocator)).perform();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act.sendKeys(competency).perform();
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+    }
+        /**
+         * This method is used for handling the drodpdown menue for rms skill master designation dropdown and
+         * entering the value as "Partner" for A1(P).
+         * @param parentLocator
+         */
+    public void handleDesgnationMenue(By parentLocator, String designation) {
+        Actions act = new Actions(driver);
+        doClick(parentLocator);// Clcking on dropdown
+        //act.moveToElement(getElement(parentLocator)).perform();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act.sendKeys(designation).perform();
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+    }
     public void doDragAndDrop(By sourcelocator, By targetLocator) {
         Actions act = new Actions(driver);
         act.dragAndDrop(getElement(sourcelocator), getElement(targetLocator)).perform();
@@ -405,6 +455,10 @@ public class ElementUtil {
     public void clickWhenReady(By locator, int timeOut) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
         wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+    }
+    public void sendKeysWithWait(By locator, String value ,int timeout ){
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(timeout));
+        wait.until(ExpectedConditions.elementToBeClickable(locator)).sendKeys(value);
     }
 
     public String waitForTitleContains(String titleFraction, int timeOut) {

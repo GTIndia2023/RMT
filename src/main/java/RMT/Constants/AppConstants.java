@@ -8,4 +8,16 @@ public class AppConstants {
     public static final String PROJECT_LISTING_PAGE_URL="https://rms-uat.wcgt.in/";
     public static final String SKILL_MASTER_PAGE_TITLE="Resource Management Tool";
     public static final String SKILL_MASTER_PAGE_URL="https://rms-uat.wcgt.in/skillmaster";
+    public static final String SKILL_MASTER_DATA_SHEET_NAME="SkillMaster";
+    public static final String SKILL_MASTER_SKILL_ADDITON_SUCCESS_MESSAGE="Skill Created.";
+    public static final String SKILL_MASTER_SKILL_UPDATION_SUCCESS_MESSAGE="Skill Updated.";
+    public static final String SKILL_MASTER_SKILL_PARTNER_DROPDOWN="Partner";
+    public static final String SKILL_MASTER_SKILL_Executive_Director_DROPDOWN="Executive Director";
+    public static final String SKILL_MASTER_SKILL_Director_DROPDOWN="Director";
+    public static final String SKILL_MASTER_SKILL_Associate_Director_DROPDOWN="Associate Director";
+    public static final String SKILL_MASTER_SKILL_Manager_DROPDOWN="Manager";
+    public static final String SKILL_MASTER_SKILL_Assistant_MANAGER_DROPDOWN="Assistant Manager";
+    public static final String SKILL_MASTER_SKILL_Senior_ASSOCIATE_DRODPOWN="Senior Associate";
+    public static final String SKILL_MASTER_SKILL_Graduate_Trainee_DROPDOWN="Graduate Trainee";
+    public static final String SKILL_MASTER_SKILL_Trainee_DROPDOWN="Trainee";
 }

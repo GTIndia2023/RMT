@@ -56,6 +56,11 @@ public class ProjectListingsPage {
      * @return skillMaster Page object
      */
     public SkillMasterPage navigateToskillMasterPage(){
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         eleutil.doActionsClick(skillsBtn);
         try {
             eleutil.handleParentSubMenu(skillsBtn,skillMasterBtn);
