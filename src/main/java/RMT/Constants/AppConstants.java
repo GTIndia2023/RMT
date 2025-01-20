@@ -9,15 +9,18 @@ public class AppConstants {
     public static final String SKILL_MASTER_PAGE_TITLE="Resource Management Tool";
     public static final String SKILL_MASTER_PAGE_URL="https://rms-uat.wcgt.in/skillmaster";
     public static final String SKILL_MASTER_DATA_SHEET_NAME="SkillMaster";
+    public static final String Designation_MASTER_DATA_SHEET_NAME="Designation Master";
     public static final String SKILL_MASTER_SKILL_ADDITON_SUCCESS_MESSAGE="Skill Created.";
     public static final String SKILL_MASTER_SKILL_UPDATION_SUCCESS_MESSAGE="Skill Updated.";
-    public static final String SKILL_MASTER_SKILL_PARTNER_DROPDOWN="Partner";
-    public static final String SKILL_MASTER_SKILL_Executive_Director_DROPDOWN="Executive Director";
-    public static final String SKILL_MASTER_SKILL_Director_DROPDOWN="Director";
-    public static final String SKILL_MASTER_SKILL_Associate_Director_DROPDOWN="Associate Director";
-    public static final String SKILL_MASTER_SKILL_Manager_DROPDOWN="Manager";
-    public static final String SKILL_MASTER_SKILL_Assistant_MANAGER_DROPDOWN="Assistant Manager";
-    public static final String SKILL_MASTER_SKILL_Senior_ASSOCIATE_DRODPOWN="Senior Associate";
-    public static final String SKILL_MASTER_SKILL_Graduate_Trainee_DROPDOWN="Graduate Trainee";
-    public static final String SKILL_MASTER_SKILL_Trainee_DROPDOWN="Trainee";
+    public static final String DESIGNATION_MASTER_GRADE_PARTNER="GRD00001";
+    public static final String DESIGNATION_MASTER_GRADE_Executive_Director="GRD00002";
+    public static final String DESIGNATION_MASTER_GRADE_Director="GRD00003";
+    public static final String DESIGNATION_MASTER_GRADE_Associate_Director="GRD00004";
+    public static final String DESIGNATION_MASTER_GRADE_MANAGER="GRD00005";
+    public static final String DESIGNATION_MASTER_GRADE_Assistant_MANAGER="GRD00006";
+    public static final String DESIGNATION_MASTER_GRADE_ASSOCIATE="GRD00007";
+    public static final String DESIGNATION_MASTER_GRADE_Graduate_Trainee="GRD00008";
+    public static final String DESIGNATION_MASTER_GRADE_Trainee="GRD00009";
+    public static final String TEST_DATA_SHEET_PATH="./src/test/TestData/SkillMater.xlsx";
+    public static final String DESIGNATION_DATA_SHEET_PATH="./src/test/TestData/Designation Master.xlsx";
 }

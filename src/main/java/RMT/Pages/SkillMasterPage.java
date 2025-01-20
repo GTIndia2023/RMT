@@ -1,15 +1,15 @@
 package RMT.Pages;
 
 import RMT.Constants.AppConstants;
-import RMT.Exceptions.ElementException;
+import RMT.Utils.DesignationUtil;
 import RMT.Utils.ElementUtil;
 import RMT.Utils.JavascriptUtil;
 import RMT.Utils.TimeUtil;
-import dev.failsafe.Timeout;
-import org.apache.poi.ss.formula.functions.T;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 
-import java.sql.Time;
+import java.util.List;
+import java.util.Objects;
 
 public class SkillMasterPage {
     private WebDriver driver;
@@ -71,8 +71,8 @@ public class SkillMasterPage {
     }
 
     /**
-     * This method is used to capture the inputs from the Excel file by using ExcelUtil by checkng that in skill master
-     * page the relevent SkillName is present or not , if present it will initialize AddSkill and if not it wil initialize
+     * This method is used to capture the inputs from the Excel file and designation file  by using ExcelUtil & designationUtil
+     * by checking that in skill master page the relevant SkillName is present or not , if present it will initialize AddSkill and if not it wil initialize
      * EditSkill and will return True or False ( And verify the successMessage through constants)
      * @param skillname
      * @param description
@@ -83,11 +83,11 @@ public class SkillMasterPage {
      * @param competency
      * @return
      */
-    public boolean handleSkill(String skillname , String description , String starting , String building , String skilled, String excelled,String competency , String A1,String A2,String A3, String B1,String B2,String C1,String C2,String D1,String D2 )  {
+    public boolean handleSkill(String fileName ,String skillID,String skillname , String description , String AnyRemarks,String starting , String building , String skilled, String excelled, String A1_P_GR00001,String A2_ED_GR00002,String A3_D_GR00003, String B1_AD_GR00004,String B2_M_GR00005,String C1_AM_GR00006,String C2_SA_GR00007,String D1_GT_GR00008,String D2_T_GR00009,String BU,String Expertise,String Specialisation,String competency ,String Classification,String Category)  {
+        Actions act = new Actions(driver);
         JavascriptUtil jsUtil= new JavascriptUtil(driver);
         eleutil.clickWhenReady(skillNameFilter, TimeUtil.DEFAULT_TIME_OUT);//Click on Ag grid filter
         eleutil.clickWhenReady(filterIcon,TimeUtil.DEFAULT_TIME_OUT);// Click on Filter icon
-        //eleutil.clickWhenReady(equalsSelection,TimeUtil.MEDIUM_TIME_OUT);
         eleutil.doSendKeys(this.containsInput,skillname,TimeUtil.DEFAULT_TIME_OUT); // Entering the skill name from the filter
         try {
             Thread.sleep(3000);
@@ -96,33 +96,41 @@ public class SkillMasterPage {
         }
         try {
             eleutil.clickWhenReady(editSkill,TimeUtil.DEFAULT_TIME_OUT);//Clicking on edit skill icon
-            eleutil.clickWhenReady(addTagbtn,TimeUtil.MEDIUM_TIME_OUT);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            jsUtil.zoomFirefoxChromeEdgeSafari("80");
+            jsUtil.scrollIntoView(driver.findElement(By.xpath("// span[@class='add-skill-link']")));
+            jsUtil.clickElementByJS(driver.findElement(By.xpath("// span[@class='add-skill-link']")));
+            //eleutil.clickWhenReady(addTagbtn,TimeUtil.MEDIUM_TIME_OUT);
             eleutil.handleCompetencyMenue(CompetencyInput,competency);//Clicking on copetency field and selecting the value from Excel
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
-            eleutil.doClick(DesignationInput,TimeUtil.MEDIUM_TIME_OUT);// Clicking on designation dropdown field
-            if (A1.equals("Yes")){
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_PARTNER_DROPDOWN);
-            }if (A2.equals("Yes")){
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Executive_Director_DROPDOWN);
-            }if (A3.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Director_DROPDOWN);
-            }if (B1.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Associate_Director_DROPDOWN);
-            }if (B2.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Manager_DROPDOWN);
-            }if (C1.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Assistant_MANAGER_DROPDOWN);
-            }if (C2.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Senior_ASSOCIATE_DRODPOWN);
-            }if (D1.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Graduate_Trainee_DROPDOWN);
-            }if (D2.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Trainee_DROPDOWN);
-            }else if (A1.equals("No") || A2.equals("No") || A3.equals("No") || B1.equals("No") || B2.equals("No") || C1.equals("No") || C2.equals("No") || D1.equals("No") || D2.equals("No")) {
+            jsUtil.zoomFirefoxChromeEdgeSafari("80");
+            if (A1_P_GR00001.equals("Yes")){
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00001");
+            }if (A2_ED_GR00002.equals("Yes")){
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00002");
+            }if (A3_D_GR00003.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00003");
+            }if (B1_AD_GR00004.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00004");
+            }if (B2_M_GR00005.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00005");
+            }if (C1_AM_GR00006.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00006");
+            }if (C2_SA_GR00007.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00007");
+            }if (D1_GT_GR00008.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00008");
+            }if (D2_T_GR00009.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00009");
+            }else if (A1_P_GR00001.equals("No") || A2_ED_GR00002.equals("No") || A3_D_GR00003.equals("No") || B1_AD_GR00004.equals("No") || B2_M_GR00005.equals("No") || C1_AM_GR00006.equals("No") || C2_SA_GR00007.equals("No") || D1_GT_GR00008.equals("No") || D2_T_GR00009.equals("No")) {
                 System.out.println("No designation value is found");
             }
 
@@ -132,11 +140,11 @@ public class SkillMasterPage {
                 throw new RuntimeException(ex);
             }
             String text=eleutil.doGetText(popUpText);
-            jsUtil.zoomFirefoxChromeEdgeSafari("90");
+            jsUtil.zoomFirefoxChromeEdgeSafari("80");
             System.out.println(text);
             eleutil.doActionsClick(popUpText);
             try {
-                Thread.sleep(8000);
+                Thread.sleep(4000);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
@@ -175,26 +183,26 @@ public class SkillMasterPage {
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
-            eleutil.doClick(DesignationInput,TimeUtil.MEDIUM_TIME_OUT);// Clicking on designation dropdown field
-            if (A1.equals("Yes")){
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_PARTNER_DROPDOWN);
-            }if (A2.equals("Yes")){
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Executive_Director_DROPDOWN);
-            }if (A3.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Director_DROPDOWN);
-            }if (B1.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Associate_Director_DROPDOWN);
-            }if (B2.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Manager_DROPDOWN);
-            }if (C1.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Assistant_MANAGER_DROPDOWN);
-            }if (C2.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Senior_ASSOCIATE_DRODPOWN);
-            }if (D1.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Graduate_Trainee_DROPDOWN);
-            }if (D2.equals("Yes")) {
-                eleutil.handleDesgnationMenue(DesignationInput,AppConstants.SKILL_MASTER_SKILL_Trainee_DROPDOWN);
-            }else if (A1.equals("No") || A2.equals("No") || A3.equals("No") || B1.equals("No") || B2.equals("No") || C1.equals("No") || C2.equals("No") || D1.equals("No") || D2.equals("No")) {
+            jsUtil.zoomFirefoxChromeEdgeSafari("80");
+            if (A1_P_GR00001.equals("Yes")){
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00001");
+            }if (A2_ED_GR00002.equals("Yes")){
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00002");
+            }if (A3_D_GR00003.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00003");
+            }if (B1_AD_GR00004.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00004");
+            }if (B2_M_GR00005.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00005");
+            }if (C1_AM_GR00006.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00006");
+            }if (C2_SA_GR00007.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00007");
+            }if (D1_GT_GR00008.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00008");
+            }if (D2_T_GR00009.equals("Yes")) {
+                eleutil.handleDesignationMenue1(DesignationInput,"GRD00009");
+            }else if (A1_P_GR00001.equals("No") || A2_ED_GR00002.equals("No") || A3_D_GR00003.equals("No") || B1_AD_GR00004.equals("No") || B2_M_GR00005.equals("No") || C1_AM_GR00006.equals("No") || C2_SA_GR00007.equals("No") || D1_GT_GR00008.equals("No") || D2_T_GR00009.equals("No")) {
                 System.out.println("No designation value is found");
             }
 
@@ -206,14 +214,24 @@ public class SkillMasterPage {
             String text=eleutil.doGetText(popUpText);
             jsUtil.zoomFirefoxChromeEdgeSafari("90");
             System.out.println(text);
-            eleutil.doActionsClick(popUpText);
             try {
-                Thread.sleep(8000);
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            eleutil.doActionsClick(popUpText);// This will click on Add Mapping Text.
+            try {
+                Thread.sleep(4000);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[2]")));
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
             eleutil.clickWhenReady(yesBtn,TimeUtil.DEFAULT_TIME_OUT);
             String successMessage=eleutil.waitForElementVisible(successMsg,TimeUtil.MEDIUM_TIME_OUT).getText();
             System.out.println("Skill added and tagged successfully " + successMessage);

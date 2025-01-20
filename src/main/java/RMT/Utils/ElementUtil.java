@@ -240,7 +240,6 @@ public class ElementUtil {
     public void handleDropdownMenue(By parentLocator) throws InterruptedException {
         Actions act = new Actions(driver);
         doClick(parentLocator);// Clcking on dropdown
-        //act.moveToElement(getElement(parentLocator)).perform();
         Thread.sleep(2000);
         act.sendKeys("Technical").perform();
         act.sendKeys(Keys.ARROW_DOWN).perform();
@@ -253,8 +252,7 @@ public class ElementUtil {
      */
     public void handleCompetencyMenue(By parentLocator, String competency ) {
         Actions act = new Actions(driver);
-        doClick(parentLocator);// Clcking on dropdown
-        //act.moveToElement(getElement(parentLocator)).perform();
+        doClick(parentLocator);// Clicking on competency dropdown
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -264,23 +262,38 @@ public class ElementUtil {
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
     }
-        /**
-         * This method is used for handling the drodpdown menue for rms skill master designation dropdown and
-         * entering the value as "Partner" for A1(P).
-         * @param parentLocator
-         */
-    public void handleDesgnationMenue(By parentLocator, String designation) {
+
+    /**
+     * This method is used for reading the data from "Designation excel" where based on gradeFilter entered by the user
+     * the designation "Xpaths" are fetched which are then we are using in designation dropdown to select the respective
+     * designation values
+     * @param parentLocator
+     * @param gradeFilter
+     */
+    public void handleDesignationMenue1(By parentLocator, String gradeFilter) {
+        JavascriptUtil jsUtil= new JavascriptUtil(driver);
+        List <String> elementList=DesignationUtil.getFilteredData(gradeFilter);// This will be giving us the list of xpaths base on grade
+        for( String xpath : elementList){
         Actions act = new Actions(driver);
-        doClick(parentLocator);// Clcking on dropdown
-        //act.moveToElement(getElement(parentLocator)).perform();
+        doActionsClick(parentLocator);// This operation will click on designation dropdown
+        act.sendKeys("").perform();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        act.sendKeys(designation).perform();
-        act.sendKeys(Keys.ARROW_DOWN).perform();
-        act.sendKeys(Keys.ENTER).perform();
+        if (gradeFilter.equals(gradeFilter)){
+            System.out.println(" Xpath to be selected are " + xpath);
+        }
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            WebElement button = driver.findElement(By.xpath(xpath));
+            jsUtil.scrollIntoView(button);
+            button.click();
+        }
     }
     public void doDragAndDrop(By sourcelocator, By targetLocator) {
         Actions act = new Actions(driver);

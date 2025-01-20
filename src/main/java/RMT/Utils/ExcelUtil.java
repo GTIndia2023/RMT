@@ -1,5 +1,6 @@
 package RMT.Utils;
 
+import RMT.Constants.AppConstants;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
@@ -11,14 +12,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 public class ExcelUtil {
-    private static final String TEST_DATA_SHEET_PATH="./src/test/TestData/SM_ED-OUTPUT 2.xlsx";
     private static Workbook book;//This is workbook reference used to get to the excel workbook
     private static Sheet sheet;
 
     public static Object [][] getTestData(String sheetName) {
         Object[][] data = null;
 
-        try (FileInputStream ip = new FileInputStream(TEST_DATA_SHEET_PATH)) {
+        try (FileInputStream ip = new FileInputStream(AppConstants.TEST_DATA_SHEET_PATH)) {
             // Load the workbook
             try {
                 book = WorkbookFactory.create(ip);
@@ -29,7 +29,7 @@ public class ExcelUtil {
 
             // Check if the sheet exists
             if (sheet == null) {
-                throw new RuntimeException("Sheet " + sheetName + " does not exist in " + TEST_DATA_SHEET_PATH);
+                throw new RuntimeException("Sheet " + sheetName + " does not exist in " + AppConstants.TEST_DATA_SHEET_PATH);
             }
 
             data = new Object[sheet.getLastRowNum()][sheet.getRow(0).getLastCellNum()];
@@ -54,7 +54,7 @@ public class ExcelUtil {
                 }
             }
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Test data file not found at " + TEST_DATA_SHEET_PATH, e);
+            throw new RuntimeException("Test data file not found at " + AppConstants.TEST_DATA_SHEET_PATH, e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
