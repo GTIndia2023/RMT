@@ -1,0 +1,40 @@
+package com.qa.rmt.MyTest;
+
+import RMT.Constants.AppConstants;
+import RMT.Errors.AppError;
+import RMT.Utils.ExcelUtil;
+import com.qa.rmt.base.BaseTest;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+
+
+public class SkillMasterTest extends BaseTest {
+    @BeforeClass
+    public void accSetup(){
+        projectPage=loginPage.doLogin(prop.getProperty("username"),prop.getProperty("password"));
+        skillmasterPage=projectPage.navigateToskillMasterPage();
+    }
+    @Test
+    public void skillMasterPageUrlTest(){
+        String actualUrl=skillmasterPage.getSkillMasterPageUrl();
+        Assert.assertEquals(actualUrl, AppConstants.SKILL_MASTER_PAGE_URL, AppError.URL_NOT_FOUND);
+
+    }
+    @DataProvider (name = "getSkillMasterData")
+    public Object[][] getSkillMasterData() {
+        return ExcelUtil.getTestData(AppConstants.SKILL_MASTER_DATA_SHEET_NAME);
+    }
+    @Test(dataProvider = "getSkillMasterData")
+    public void skillMasterTest(String skillName, String description , String starting , String building , String skilled, String excelled,String competency,String A1_P_GR00001,String A2_ED_GR00002,String A3_D_GR00003, String B1_AD_GR00004,String B2_M_GR00005,String C1_AM_GR00006,String C2_SA_GR00007,String D1_GT_GR00008,String D2_T_GR00009 ){
+        if (skillName.equals("null")){
+            System.out.println("Skill name not found ");
+        }else {
+        Assert.assertTrue(skillmasterPage.handleSkill(skillName,description,starting,building,skilled,excelled,competency,A1_P_GR00001,A2_ED_GR00002,A3_D_GR00003,B1_AD_GR00004,B2_M_GR00005,C1_AM_GR00006,C2_SA_GR00007,D1_GT_GR00008,D2_T_GR00009), AppError.ROWS_TEXT_NOT_FOUND);
+    }}
+
+}
