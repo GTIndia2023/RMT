@@ -1,15 +1,10 @@
 package RMT.Utils;
-
 import RMT.Constants.AppConstants;
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
-
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.util.stream.Stream;
 
 public class ExcelUtil {
     private static Workbook book;//This is workbook reference used to get to the excel workbook
@@ -58,6 +53,7 @@ public class ExcelUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        Stream.of(data[1]).forEach(System.out::println);
         return data;
     }
 

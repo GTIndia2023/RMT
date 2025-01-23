@@ -88,7 +88,7 @@ public class SkillMasterPage {
         JavascriptUtil jsUtil= new JavascriptUtil(driver);
         eleutil.clickWhenReady(skillNameFilter, TimeUtil.DEFAULT_TIME_OUT);//Click on Ag grid filter
         eleutil.clickWhenReady(filterIcon,TimeUtil.DEFAULT_TIME_OUT);// Click on Filter icon
-        eleutil.doSendKeys(this.containsInput,skillname,TimeUtil.DEFAULT_TIME_OUT); // Entering the skill name from the filter
+        eleutil.doSendKeys(this.containsInput,skillname,TimeUtil.DEFAULT_TIME_OUT); // Entering the skill name from the filter/File
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -113,23 +113,23 @@ public class SkillMasterPage {
             }
             jsUtil.zoomFirefoxChromeEdgeSafari("80");
             if (A1_P_GR00001.equals("Yes")){
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00001");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_PARTNER);
             }if (A2_ED_GR00002.equals("Yes")){
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00002");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Executive_Director);
             }if (A3_D_GR00003.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00003");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Director);
             }if (B1_AD_GR00004.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00004");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Associate_Director);
             }if (B2_M_GR00005.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00005");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_MANAGER);
             }if (C1_AM_GR00006.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00006");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Assistant_MANAGER);
             }if (C2_SA_GR00007.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00007");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_ASSOCIATE);
             }if (D1_GT_GR00008.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00008");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Graduate_Trainee);
             }if (D2_T_GR00009.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00009");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Trainee);
             }else if (A1_P_GR00001.equals("No") || A2_ED_GR00002.equals("No") || A3_D_GR00003.equals("No") || B1_AD_GR00004.equals("No") || B2_M_GR00005.equals("No") || C1_AM_GR00006.equals("No") || C2_SA_GR00007.equals("No") || D1_GT_GR00008.equals("No") || D2_T_GR00009.equals("No")) {
                 System.out.println("No designation value is found");
             }
@@ -176,6 +176,11 @@ public class SkillMasterPage {
             eleutil.doSendKeys(this.buildingInput,building,TimeUtil.DEFAULT_TIME_OUT);
             eleutil.doSendKeys(this.skilledInput,skilled,TimeUtil.DEFAULT_TIME_OUT);
             eleutil.doSendKeys(this.excelledInput,excelled,TimeUtil.DEFAULT_TIME_OUT);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
             eleutil.doClick(addTagbtn,TimeUtil.MEDIUM_TIME_OUT);
             eleutil.handleCompetencyMenue(CompetencyInput,competency);//Clicking on copetency field and selecting the value from Excel
             try {
@@ -185,23 +190,23 @@ public class SkillMasterPage {
             }
             jsUtil.zoomFirefoxChromeEdgeSafari("80");
             if (A1_P_GR00001.equals("Yes")){
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00001");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_PARTNER);
             }if (A2_ED_GR00002.equals("Yes")){
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00002");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Executive_Director);
             }if (A3_D_GR00003.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00003");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Director);
             }if (B1_AD_GR00004.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00004");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Associate_Director);
             }if (B2_M_GR00005.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00005");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_MANAGER);
             }if (C1_AM_GR00006.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00006");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Assistant_MANAGER);
             }if (C2_SA_GR00007.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00007");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_ASSOCIATE);
             }if (D1_GT_GR00008.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00008");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Graduate_Trainee);
             }if (D2_T_GR00009.equals("Yes")) {
-                eleutil.handleDesignationMenue1(DesignationInput,"GRD00009");
+                eleutil.handleDesignationMenue1(DesignationInput,AppConstants.DESIGNATION_MASTER_GRADE_Trainee);
             }else if (A1_P_GR00001.equals("No") || A2_ED_GR00002.equals("No") || A3_D_GR00003.equals("No") || B1_AD_GR00004.equals("No") || B2_M_GR00005.equals("No") || C1_AM_GR00006.equals("No") || C2_SA_GR00007.equals("No") || D1_GT_GR00008.equals("No") || D2_T_GR00009.equals("No")) {
                 System.out.println("No designation value is found");
             }
