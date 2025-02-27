@@ -8,9 +8,11 @@ public class AppConstants {
     public static final String PROJECT_LISTING_PAGE_URL="https://rms-uat.wcgt.in/";
     public static final String SKILL_MASTER_PAGE_TITLE="Resource Management Tool";
     public static final String SKILL_MASTER_PAGE_URL="https://rms-uat.wcgt.in/skillmaster";
+    public static final String REQUISITON_PAGE_URL="https://rms-uat.wcgt.in/create-requisition/085375/13-1-FII001-CYV-NR-2425-00001";
     public static final String SKILL_MASTER_DATA_SHEET_NAME="SkillMaster";
     public static final String Designation_MASTER_DATA_SHEET_NAME="Designation Master";
     public static final String SKILL_MASTER_SKILL_ADDITON_SUCCESS_MESSAGE="Skill Created.";
+    public static final String REQUISITON_CREATED_MESSAGE="Requisition created successfully.";
     public static final String SKILL_MASTER_SKILL_UPDATION_SUCCESS_MESSAGE="Skill Updated.";
     public static final String DESIGNATION_MASTER_GRADE_PARTNER="GRD00001";
     public static final String DESIGNATION_MASTER_GRADE_Executive_Director="GRD00002";
@@ -23,4 +25,8 @@ public class AppConstants {
     public static final String DESIGNATION_MASTER_GRADE_Trainee="GRD00009";
     public static final String TEST_DATA_SHEET_PATH="./src/test/TestData/SkillMater.xlsx";
     public static final String DESIGNATION_DATA_SHEET_PATH="./src/test/TestData/Designation Master.xlsx";
+    public static final String Search_JOB_BY_JOB_CODE="13-1-FII001-CYV-NR-2425-00001";
+    public static final String CREATE_REQUISITION_FAILED="Requisition not created";
+    public static final String SYSTEM_SUGGESTED_CARD="RMSED Offering";
+    public static final String SYSTEM_SUGGESTION_CARD_NOT_VISIBLE="=====CARD NOT VISIBLE ======";
 }

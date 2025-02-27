@@ -53,7 +53,7 @@ public class ExcelUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Stream.of(data[1]).forEach(System.out::println);
+        //Stream.of(data[1]).forEach(System.out::println);
         return data;
     }
 
