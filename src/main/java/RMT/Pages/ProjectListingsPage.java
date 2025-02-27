@@ -61,11 +61,6 @@ public class ProjectListingsPage {
      * @return skillMaster Page object
      */
     public SkillMasterPage navigateToskillMasterPage(){
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         eleutil.doActionsClick(skillsBtn);
         try {
             eleutil.handleParentSubMenu(skillsBtn,skillMasterBtn);
@@ -73,7 +68,7 @@ public class ProjectListingsPage {
             throw new RuntimeException(e);
         }
         try {
-            Thread.sleep(4000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new ElementException("Element not visible on the page yet ");
         }

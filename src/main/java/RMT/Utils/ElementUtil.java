@@ -286,23 +286,27 @@ public class ElementUtil {
         Actions act = new Actions(driver);
         doActionsClick(parentLocator);// This operation will click on designation dropdown
         act.sendKeys("").perform();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         if (gradeFilter.equals(gradeFilter)){
             totalXPaths++; // Increment counter
             System.out.println(" Xpath to be selected are " + xpath);
         }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            WebElement button = driver.findElement(By.xpath(xpath));
+            // Explicit wait for the element to be visible before interacting with it
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
             jsUtil.scrollIntoView(button);
-            button.click();
+            // Try normal click
+            try {
+                button.click();
+            } catch (Exception e) {
+                // Use JavaScript click if normal click fails
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", button);
+            }
             // Capture the end time for this designation selection
             LocalDateTime endSelection = LocalDateTime.now();
             Duration durationSelection = Duration.between(startSelection, endSelection);

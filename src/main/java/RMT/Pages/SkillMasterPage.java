@@ -105,7 +105,7 @@ public class SkillMasterPage {
         Duration duration = Duration.between(startOperation, endOperation);
         System.out.println("Time taken for skill filter operation: " + duration.toMinutes() + " min " + duration.toSecondsPart() + " sec");
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -191,11 +191,6 @@ public class SkillMasterPage {
             jsUtil.zoomFirefoxChromeEdgeSafari("50");
             System.out.println(text);
             eleutil.doActionsClick(popUpText);
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
             eleutil.clickWhenReady(yesBtn,TimeUtil.DEFAULT_TIME_OUT);
@@ -499,15 +494,10 @@ public class SkillMasterPage {
             throw new RuntimeException(ex);
         }
         eleutil.doActionsClick(popUpText);// This will click on Add Mapping Text.
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
         jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[2]")));
         jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
