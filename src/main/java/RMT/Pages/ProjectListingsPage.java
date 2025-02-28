@@ -1,5 +1,6 @@
 package RMT.Pages;
 
+import RMT.App;
 import RMT.Constants.AppConstants;
 import RMT.Exceptions.ElementException;
 import RMT.Utils.ElementUtil;
@@ -20,6 +21,10 @@ public class ProjectListingsPage {
     //2. ProjectListing page By locators
     private By skillsBtn=By.id("basic-menu-15");
     private By skillMasterBtn=By.xpath("//a[@href='/skillmaster']");
+    private By Search = By.xpath("//input[@placeholder='Search']");
+    private By JobCode=By.xpath("//span[@aria-label='Deals Structuring-Inteligent Hub-2425-01-P-1']");
+    private By ThreeDots = By.xpath("(//span[@class='MuiTouchRipple-root css-w0pj6f'])[18]");
+    private By CreateRequisiton=By.xpath("(//li[@tabindex='-1'])[10]");
 
     //3.Page actions
 
@@ -56,11 +61,6 @@ public class ProjectListingsPage {
      * @return skillMaster Page object
      */
     public SkillMasterPage navigateToskillMasterPage(){
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         eleutil.doActionsClick(skillsBtn);
         try {
             eleutil.handleParentSubMenu(skillsBtn,skillMasterBtn);
@@ -68,11 +68,30 @@ public class ProjectListingsPage {
             throw new RuntimeException(e);
         }
         try {
-            Thread.sleep(4000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new ElementException("Element not visible on the page yet ");
         }
         return new SkillMasterPage(driver);
+
+    }
+
+    public RequisitionPage navigateToRequisitonPage (){
+        eleutil.doActionsSendKeys(Search,AppConstants.Search_JOB_BY_JOB_CODE);
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        eleutil.doActionsClick(ThreeDots);
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        eleutil.doActionsClick(CreateRequisiton);
+        return new RequisitionPage(driver);
+
 
     }
 

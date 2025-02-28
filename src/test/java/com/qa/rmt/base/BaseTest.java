@@ -3,6 +3,7 @@ package com.qa.rmt.base;
 import RMT.Factory.DriverManager;
 import RMT.Pages.LoginPage;
 import RMT.Pages.ProjectListingsPage;
+import RMT.Pages.RequisitionPage;
 import RMT.Pages.SkillMasterPage;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterTest;
@@ -20,6 +21,7 @@ public class BaseTest {
     protected LoginPage loginPage;// This is excess modfier where we can use the child methods in another classes which have inherited it
     protected ProjectListingsPage projectPage;
     protected SkillMasterPage skillmasterPage;
+    protected RequisitionPage requisitionPage;
     @Parameters({"browser"})
     @BeforeTest
     public void setup(@Optional("chrome") String browserName) {

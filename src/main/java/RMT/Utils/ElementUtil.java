@@ -1,11 +1,14 @@
 package RMT.Utils;
 
 import RMT.Exceptions.ElementException;
+import org.checkerframework.checker.units.qual.C;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -237,11 +240,12 @@ public class ElementUtil {
      * @param parentLocator
      * @throws InterruptedException
      */
-    public void handleDropdownMenue(By parentLocator) throws InterruptedException {
+    public void handleDropdownMenue(By parentLocator, String Category) throws InterruptedException {
         Actions act = new Actions(driver);
         doClick(parentLocator);// Clcking on dropdown
         Thread.sleep(2000);
-        act.sendKeys("Technical").perform();
+        act.sendKeys(Category).perform();
+        Thread.sleep(1000);
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
     }
@@ -272,28 +276,44 @@ public class ElementUtil {
      */
     public void handleDesignationMenue1(By parentLocator, String gradeFilter) {
         JavascriptUtil jsUtil= new JavascriptUtil(driver);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         List <String> elementList=DesignationUtil.getFilteredData(gradeFilter);// This will be giving us the list of xpaths base on grade
+        int totalXPaths = 0; // Counter to track total selected XPaths
         for( String xpath : elementList){
+            // Capture the start time for each designation selection
+            LocalDateTime startSelection = LocalDateTime.now();
+            System.out.println("Start Time for selecting designation: " + startSelection.format(formatter));
         Actions act = new Actions(driver);
         doActionsClick(parentLocator);// This operation will click on designation dropdown
         act.sendKeys("").perform();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         if (gradeFilter.equals(gradeFilter)){
+            totalXPaths++; // Increment counter
             System.out.println(" Xpath to be selected are " + xpath);
         }
             try {
-                Thread.sleep(4000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            WebElement button = driver.findElement(By.xpath(xpath));
+            // Explicit wait for the element to be visible before interacting with it
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
             jsUtil.scrollIntoView(button);
-            button.click();
+            // Try normal click
+            try {
+                button.click();
+            } catch (Exception e) {
+                // Use JavaScript click if normal click fails
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", button);
+            }
+            // Capture the end time for this designation selection
+            LocalDateTime endSelection = LocalDateTime.now();
+            Duration durationSelection = Duration.between(startSelection, endSelection);
+            System.out.println("Time taken for selecting designation: " + durationSelection.toMinutes() + " min " + durationSelection.toSecondsPart() + " sec");
         }
+        // Print total number of selected XPaths
+        System.out.println("Total XPaths selected during this method call: " + totalXPaths);
     }
     public void doDragAndDrop(By sourcelocator, By targetLocator) {
         Actions act = new Actions(driver);
