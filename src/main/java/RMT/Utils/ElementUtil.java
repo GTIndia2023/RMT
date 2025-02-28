@@ -291,7 +291,7 @@ public class ElementUtil {
             System.out.println(" Xpath to be selected are " + xpath);
         }
             try {
-                Thread.sleep(500);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
