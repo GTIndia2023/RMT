@@ -3,11 +3,15 @@ package RMT.Factory;
 import RMT.Constants.AppConstants;
 import RMT.Errors.AppError;
 import RMT.Exceptions.BrowserException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.io.FileHandler;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +21,7 @@ public class DriverManager {
 
     WebDriver driver;
     Properties prop;
+    public static ThreadLocal<WebDriver>tlDriver=new ThreadLocal<WebDriver>();
 
 
     public WebDriver initDriver(Properties prop ){
@@ -26,22 +31,30 @@ public class DriverManager {
         System.out.println("Browser name is "+ browserName);
         switch (browserName.trim().toLowerCase()){
             case "chrome":
-                driver=new ChromeDriver();
+                tlDriver.set(new ChromeDriver());
                 break;
             case "firefox":
-                driver=new FirefoxDriver();
+                tlDriver.set(new FirefoxDriver());
                 break;
             case "edge":
-                driver=new EdgeDriver();
+                tlDriver.set(new EdgeDriver());
                 break;
             default:
                 System.out.println("Please pass the right browser"+ browserName);
                 throw new BrowserException(AppError.BROWSER_NOT_FOUND );
         }
-        driver.manage().deleteAllCookies();
-        driver.manage().window().maximize();
-        driver.get(prop.getProperty("url"));
-        return driver;
+        getDriver().manage().deleteAllCookies();
+        getDriver().manage().window().maximize();
+        getDriver().get(prop.getProperty("url"));
+        return getDriver();
+    }
+
+    /**
+     * get the local thread copy of the driver
+     * @return
+     */
+    public static WebDriver getDriver(){
+        return tlDriver.get();
     }
 
 

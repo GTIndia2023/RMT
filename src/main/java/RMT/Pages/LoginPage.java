@@ -3,6 +3,7 @@ package RMT.Pages;
 import RMT.Constants.AppConstants;
 import RMT.Utils.ElementUtil;
 import RMT.Utils.TimeUtil;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -33,6 +34,7 @@ public class LoginPage {
      * This method is used to fetch the loginPage Title
      * @return the title in string form
      */
+    @Step("Getting Login Page Title")
     public String getLoginPageTitle() {
         String title = eleutil.waitForTitleToBe(AppConstants.LOGIN_PAGE_TITLE, TimeUtil.DEFAULT_TIME_OUT);
         System.out.println("Login page title is : " + title);
@@ -55,9 +57,10 @@ public class LoginPage {
      * @param pswd
      * @return ProjectLstings page object
      */
+    @Step("Login the Application wih username: {0} and password: ********")
     public ProjectListingsPage doLogin(String un , String pswd){
         try {
-            Thread.sleep(4000);
+            Thread.sleep(6000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
