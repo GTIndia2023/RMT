@@ -98,6 +98,19 @@
       <version>${aspectj.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->
+    <dependency>
+      <groupId>com.aventstack</groupId>
+      <artifactId>extentreports</artifactId>
+      <version>5.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.10.2</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

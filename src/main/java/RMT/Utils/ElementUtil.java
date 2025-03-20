@@ -1,6 +1,7 @@
 package RMT.Utils;
 
 import RMT.Exceptions.ElementException;
+import io.qameta.allure.Step;
 import org.checkerframework.checker.units.qual.C;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -36,7 +37,7 @@ public class ElementUtil {
         getElement(locator).clear();
         getElement(locator).sendKeys(value);
     }
-
+    @Step("Entering the value using  locator: {0} with value : {1} and waiting for element with timeout : {2}sec ")
     public void doSendKeys(By locator, String value, int timeOut) {
         nullCheck(value);
         waitForElementVisible(locator, timeOut).clear();
@@ -62,7 +63,7 @@ public class ElementUtil {
     public void doClick(By locator) {
         getElement(locator).click();
     }
-
+    @Step("Clicking on the element using the locator: {0}")
     public void doClick(By locator, int timeOut) {
         waitForElementVisible(locator, timeOut).click();
     }
@@ -506,7 +507,7 @@ public class ElementUtil {
         }
         return driver.getTitle();
     }
-
+    @Step("Waiting for the Title and capturing it")
     public String waitForTitleToBe(String titleVal, int timeOut) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
 

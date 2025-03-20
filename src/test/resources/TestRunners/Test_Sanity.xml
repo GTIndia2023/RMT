@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="RMT  SANTIY SUIT " >
-<!--    // Block number 1-->
-<!--    <test name="Login Page Test">-->
-<!--        <parameter name="browser" value="chrome" />-->
-<!--        &lt;!&ndash;        <parameter name="url" value="https://www.jiocinema.com/" />&ndash;&gt;-->
-<!--        <classes>-->
-<!--            <class name="com.qa.rmt.MyTest.LoginTest" />-->
-<!--        </classes>-->
-<!--    </test>-->
+<suite name="RMT  SANTIY SUIT " verbose="4" thread-count="4" parallel="tests">
+
+    <listeners>
+        <listener class-name="RMT.Listeners.TestAllureListener">
+
+        </listener>
+        <!-- <listener
+            class-name="com.qa.opencart.listeners.AnnotationTransformer" /> -->
+    </listeners>
+    // Block number 1
+    <test name="Login Page Test">
+        <parameter name="browser" value="chrome" />
+        <!--        <parameter name="url" value="https://www.jiocinema.com/" />-->
+        <classes>
+            <class name="com.qa.rmt.MyTest.LoginTest" />
+        </classes>
+    </test>
 
 
-<!--    // Block number 2-->
-<!--    <test name="ProjectListing Page Test">-->
-<!--        <parameter name="browser" value="chrome" />-->
-<!--        &lt;!&ndash;        <parameter name="url" value="https://www.jiocinema.com/" />&ndash;&gt;-->
-<!--        <classes>-->
-<!--            <class name="com.qa.rmt.MyTest.ProjectListingTest" />-->
-<!--        </classes>-->
-<!--    </test>-->
+    // Block number 2
+    <test name="ProjectListing Page Test">
+        <parameter name="browser" value="chrome" />
+        <!--        <parameter name="url" value="https://www.jiocinema.com/" />-->
+        <classes>
+            <class name="com.qa.rmt.MyTest.ProjectListingTest" />
+        </classes>
+    </test>
 
     // Block number 3
     <test name="Skill Master Page Test">
@@ -29,14 +37,14 @@
             <class name="com.qa.rmt.MyTest.SkillMasterTest" />
         </classes>
     </test>
-<!--    // Block number 4-->
-<!--    <test name="Create Requisition  Page Test">-->
-<!--        <parameter name="browser" value="Chrome" />-->
-<!--        &lt;!&ndash;        <parameter name="url" value="https://www.jiocinema.com/" />&ndash;&gt;-->
-<!--        <classes>-->
-<!--            <class name="com.qa.rmt.MyTest.RequisitionTest" />-->
-<!--        </classes>-->
-<!--    </test>-->
+    // Block number 4
+    <test name="Create Requisition  Page Test">
+        <parameter name="browser" value="Chrome" />
+        <!--        <parameter name="url" value="https://www.jiocinema.com/" />-->
+        <classes>
+            <class name="com.qa.rmt.MyTest.RequisitionTest" />
+        </classes>
+    </test>
 
 
 </suite>
