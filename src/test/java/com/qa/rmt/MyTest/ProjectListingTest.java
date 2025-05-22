@@ -7,6 +7,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.lang.ref.PhantomReference;
+
 public class ProjectListingTest extends BaseTest {
     @BeforeClass
     public void accSetup(){
@@ -24,6 +26,16 @@ public class ProjectListingTest extends BaseTest {
 
     }
     @Test(priority = 3)
+    public void updateAllocationTest(){
+        String actualStatus=projectPage.updateAllocation();
+        Assert.assertEquals(actualStatus,AppConstants.UPDATED_ALOCATION_STATUS,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
+    }
+    @Test(priority = 4)
+    public void updateAddDelegate(){
+        String actualMesssage=projectPage.checkAllocateDelegate();
+        Assert.assertEquals(actualMesssage,AppConstants.ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE,AppError.UPDATE_ADD_DELEGATE_FUNCTIOANLTY_NOT_WORKING);
+    }
+    @Test(priority = 5)
     public void navigateToSkillMasterTest() throws InterruptedException {
         skillmasterPage=projectPage.navigateToskillMasterPage();
         Assert.assertEquals(skillmasterPage.getSkillMasterPageTitle(),AppConstants.SKILL_MASTER_PAGE_TITLE,AppError.TITLE_NOT_FOUND);

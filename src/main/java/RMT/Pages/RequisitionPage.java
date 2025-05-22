@@ -50,6 +50,16 @@ public class RequisitionPage {
     private By updateSuccessMesg=By.xpath("//div[@class='MuiAlert-message css-1xsto0d']");
     private By subIndustrySlider=By.xpath("(//div[@class='MuiTypography-root MuiTypography-body1 css-1nnquuk'])[7]");
     private By exportBtn=By.xpath("//div[@class='download-icon']");
+    private By locationDrpn=By.xpath("(//input[@type='text'])[8]");
+    private By locationSelect=By.xpath("(//li[text()='DEL'])");
+    private By detailView=By.xpath("(//button[text()='Detail View'])");
+    private By delegateDropwn=By.xpath("((//input[@placeholder='Type And Select']))");
+    private By addtionalElDropdn=By.xpath("((//input[@type='text']))[2]");
+    private By addtionalDelegateDropdwn=By.xpath("((//input[@type='text']))[3]");
+    private By updateDetailsBtn=By.xpath("(//button[text()='Update Details'])");
+    private By clickOnAdd=By.xpath("//span[text()='Add']");
+
+
 
     //3.Page actions
 
@@ -103,13 +113,8 @@ public class RequisitionPage {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        jsUtil.scrollIntoView(eleutil.getElement(startDate));
-        eleutil.doActionsSendKeysWithPause(startDate,"03-03-2025",5);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        jsUtil.scrollIntoView(eleutil.getElement(startDate));
+//        eleutil.doActionsSendKeysWithPause(startDate,"03-03-2025",5);
         eleutil.doActionsClick(CompetencyDropown);
         eleutil.sendKeysWithWait(CompetencyDropown,"Due Diligence",3);
         try {
@@ -132,6 +137,20 @@ public class RequisitionPage {
             throw new RuntimeException(e);
         }
         eleutil.getElement(skillSelect);
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        eleutil.doActionsClick(locationDrpn);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        eleutil.getElement(locationSelect);
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
         try {
@@ -356,6 +375,127 @@ public class RequisitionPage {
             return false;
         }
 
+    }
+
+    /**
+     * This method is used to verify whether user is able to add delegate into a job or not
+     * @return False ( Addition of Delegate to a job failed)
+     */
+    public boolean addDelegate(){
+        Actions act=new Actions(driver);
+        eleutil.doActionsClick(detailView);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act
+                .click(driver.findElement(By.xpath("((//input[@placeholder='Type And Select']))")))  // Focus on the input field
+                .keyDown(Keys.CONTROL)
+                .sendKeys("a")                        // Select all text
+                .keyUp(Keys.CONTROL)
+                .sendKeys(Keys.DELETE)               // Delete selected text
+                .perform();
+        eleutil.doActionsClick(delegateDropwn);
+        eleutil.doActionsSendKeysWithPause(delegateDropwn,"RMSED.ResourceReq1@IN.GT.COM",10);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+        eleutil.doActionsClick(updateDetailsBtn);
+        eleutil.doActionsClick(confirmBtn);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        String successMessage=eleutil.waitForElementVisible(updateSuccessMesg,TimeUtil.MEDIUM_TIME_OUT).getText();
+        System.out.println("Adding Delegate Status " + successMessage);
+        if (successMessage.equalsIgnoreCase(AppConstants.ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public boolean updateDelegate(){
+        Actions act=new Actions(driver);
+        eleutil.doActionsClick(detailView);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act
+                .click(driver.findElement(By.xpath("((//input[@placeholder='Type And Select']))")))  // Focus on the input field
+                .keyDown(Keys.CONTROL)
+                .sendKeys("a")                        // Select all text
+                .keyUp(Keys.CONTROL)
+                .sendKeys(Keys.DELETE)               // Delete selected text
+                .perform();
+        eleutil.doActionsClick(delegateDropwn);
+        eleutil.doActionsSendKeysWithPause(delegateDropwn,"RMSED.Resource4@IN.GT.COM",10);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+        eleutil.doActionsClick(updateDetailsBtn);
+        eleutil.doActionsClick(confirmBtn);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        String successMessage=eleutil.waitForElementVisible(updateSuccessMesg,TimeUtil.MEDIUM_TIME_OUT).getText();
+        System.out.println("Updating Delegate Status " + successMessage);
+        if (successMessage.equalsIgnoreCase(AppConstants.ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE)){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    /**
+     * This method is used to verify whether user is able to add delegate into a job or not
+     * @return False ( Addition of Delegate to a job failed)
+     */
+    public boolean addEngadgementLeader(){
+        Actions act=new Actions(driver);
+        eleutil.doActionsClick(clickOnAdd);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        eleutil.doActionsClick(addtionalElDropdn);
+        eleutil.doActionsSendKeysWithPause(addtionalElDropdn,"RMSED.ResourceReq1",20);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        act.sendKeys(Keys.ARROW_DOWN).perform();
+        act.sendKeys(Keys.ENTER).perform();
+        eleutil.doActionsClick(updateDetailsBtn);
+        eleutil.doActionsClick(confirmBtn);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        String successMessage=eleutil.waitForElementVisible(updateSuccessMesg,TimeUtil.MEDIUM_TIME_OUT).getText();
+        System.out.println("Additional EL  Status " + successMessage);
+        if (successMessage.equalsIgnoreCase(AppConstants.ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

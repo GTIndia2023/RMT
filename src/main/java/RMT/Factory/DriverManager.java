@@ -3,6 +3,7 @@ package RMT.Factory;
 import RMT.Constants.AppConstants;
 import RMT.Errors.AppError;
 import RMT.Exceptions.BrowserException;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -37,6 +38,7 @@ public class DriverManager {
                 tlDriver.set(new FirefoxDriver());
                 break;
             case "edge":
+                System.out.println("Loaded config: " + prop);
                 tlDriver.set(new EdgeDriver());
                 break;
             default:
@@ -68,6 +70,7 @@ public class DriverManager {
         }
         try {
             prop.load(ip);
+            System.out.println("Loaded config: " + prop);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

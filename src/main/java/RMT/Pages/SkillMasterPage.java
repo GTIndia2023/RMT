@@ -5,6 +5,8 @@ import RMT.Exceptions.ElementException;
 import RMT.Utils.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.Objects;
 public class SkillMasterPage {
     private WebDriver driver;
     ElementUtil eleutil;
+    WebDriverWait wait;
 
     //1. Skill master page constructor
     public SkillMasterPage(WebDriver driver) {
@@ -57,6 +60,8 @@ public class SkillMasterPage {
     private By searchedResult = By.xpath("//span[text()='Consultant']");
     private By toggleBtn = By.xpath("(//input[@type='checkbox'])[1]");
     private By employeeDsgn = By.xpath("(//span[text()='Assistant Manager'])");
+    private By clickContains=By.xpath("//div[text()='Contains']");
+    private By selectEquals=By.xpath("//div[@role='option' and .//span[text()='Equals']]");
 
 
     //3.Page actions
@@ -111,6 +116,11 @@ public class SkillMasterPage {
         System.out.println("Start Time for skill filter operation: " + startOperation.format(formatter));
         eleutil.clickWhenReady(skillNameFilter, TimeUtil.DEFAULT_TIME_OUT);//Click on Ag grid filter
         eleutil.clickWhenReady(filterIcon, TimeUtil.DEFAULT_TIME_OUT);// Click on Filter icon
+        try {
+            eleutil.handleParentSubMenuWithClick(clickContains,selectEquals);//Select the filter option as Equal
+        } catch (ElementException e) {
+            throw new ElementException("Element is not found on DOM");
+        }
         eleutil.doSendKeys(this.containsInput, skillname, TimeUtil.DEFAULT_TIME_OUT); // Entering the skill name from the filter/File
         LocalDateTime endOperation = LocalDateTime.now();
         Duration duration = Duration.between(startOperation, endOperation);
@@ -368,6 +378,11 @@ public class SkillMasterPage {
 
         eleutil.clickWhenReady(skillNameFilter, TimeUtil.DEFAULT_TIME_OUT);
         eleutil.clickWhenReady(filterIcon, TimeUtil.DEFAULT_TIME_OUT);
+        try {
+            eleutil.handleParentSubMenuWithClick(clickContains,selectEquals);//Select the filter option as Equal
+        } catch (ElementException e) {
+            throw new ElementException("Element is not found on DOM");
+        }
         eleutil.doSendKeys(this.containsInput, skillname, TimeUtil.DEFAULT_TIME_OUT);
 
         try {
@@ -543,11 +558,7 @@ public class SkillMasterPage {
             throw new RuntimeException(e);
         }
         eleutil.doActionsClick(skillsBtn);
-        try {
-            eleutil.handleParentSubMenu(skillsBtn, skillSearchBtn);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        eleutil.handleParentSubMenu(skillsBtn, skillSearchBtn);
         try {
             Thread.sleep(4000);
         } catch (InterruptedException e) {

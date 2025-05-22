@@ -13,6 +13,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.security.PublicKey;
+
 public class RequisitionTest extends BaseTest {
     @BeforeClass
     public void accSetup(){
@@ -83,4 +85,26 @@ public class RequisitionTest extends BaseTest {
     public void checkDeleteRequisiton(){
         Assert.assertTrue(requisitionPage.requisitonDeletion(),AppConstants.DELETE_REQUISITON_BUTTON);
     }
+    @Test(priority = 9)
+    @Description("This test is checking that user is able to add delegate to a job or not   ")
+    @Owner("Piyush Wadhwa")
+    @Severity(SeverityLevel.CRITICAL)
+    public void checkAddDelegate(){
+        Assert.assertTrue(requisitionPage.addDelegate(),AppConstants.ADDTITION_OF_DELEGATE_FAILED);
+    }
+    @Test(priority = 10)
+    @Description("This test is checking that user is able to add delegate to a job or not   ")
+    @Owner("Piyush Wadhwa")
+    @Severity(SeverityLevel.CRITICAL)
+    public void checkUpdateDelegate(){
+        Assert.assertTrue(requisitionPage.updateDelegate(),AppConstants.UPDATION_OF_DELEGATE_FAILED);
+    }
+    @Test(priority = 11)
+    @Description("This test is checking that user is able to add delegate to a job or not   ")
+    @Owner("Piyush Wadhwa")
+    @Severity(SeverityLevel.CRITICAL)
+    public void checkaddEL(){
+        Assert.assertTrue(requisitionPage.addEngadgementLeader(),AppConstants.ADDITION_OF_ADDTIONAL_EL_FAILED);
+    }
+
 }
