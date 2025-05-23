@@ -27,9 +27,13 @@ public class AppConstants {
     public static final String DESIGNATION_MASTER_GRADE_Trainee="GRD00009";
     public static final String TEST_DATA_SHEET_PATH="./src/test/TestData/SkillMater.xlsx";
     public static final String DESIGNATION_DATA_SHEET_PATH="./src/test/TestData/Designation Master.xlsx";
-    public static final String Search_JOB_BY_JOB_CODE="13-1-FII001-CYV-NR-2425-00001";
+    public static final String Search_JOB_BY_JOB_CODE=" 13-5-MAXIM/9867-RV0-NR-2324-00002";
+    public static final String UPDATE_ALLOCATION_BY_JOB_CODE="9-2-INTEL/9688-DET- R-2425-00003";
     public static final String CREATE_REQUISITION_FAILED="Requisition not created";
     public static final String UPDATE_REQUISITION_FAILED="Requisition Updation Failed";
+    public static final String ADDTITION_OF_DELEGATE_FAILED="Addtion of Delegate Failed";
+    public static final String UPDATION_OF_DELEGATE_FAILED="Updation  of Delegate Failed";
+    public static final String ADDITION_OF_ADDTIONAL_EL_FAILED="Addtion of Additional EL  Failed";
     public static final String SYSTEM_SUGGESTED_CARD="Ritika Sharma \n" +
             "(Total-7)";
     public static final String UPDATED_SYSTEM_SUGGESTED_CARD="Ritika Sharma \n" +
@@ -41,5 +45,8 @@ public class AppConstants {
     public static final String EMPLOYEE_SKILL_DESIGNATION="Assistant Manager";
     public static final String SKILL_SEARCH_BY_SKILL_NAME_NOT_FOUND="====SKILL NAME NOT FOUND======";
     public static final String SKILL_SEARCH_BY_EMPLOYEE_NAME_NOT_FOUND="====SKILL NOT FOUND TAGGED TO EMPLOYEE======";
+    public static final String UPDATED_ALOCATION_STATUS="Allocation Complete";
+    public static final String ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE="Project details updated successfully!";
+    public static final String ADDITION_UPDATION_OF_DELEGATE_IN_A_JOB="Project details updated successfully!";
 
 }

@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class ElementUtil {
     private WebDriver driver;
@@ -229,11 +230,49 @@ public class ElementUtil {
 
     // *****************Actions utils********************//
 
-    public void handleParentSubMenu(By parentLocator, By childLocator) throws InterruptedException {
+    /**
+     * This method is used where on hovering on parentLocator the childLocators get visible
+     * and user click on childLocator to seletc the same
+     * @param parentLocator
+     * @param childLocator
+     */
+    public void handleParentSubMenu(By parentLocator, By childLocator){
         Actions act = new Actions(driver);
         act.moveToElement(getElement(parentLocator)).perform();
-        Thread.sleep(2000);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         doClick(childLocator);
+    }
+    /**
+     * This method clicks on a parent menu item (e.g., a dropdown or expandable menu),
+     * waits for the corresponding child menu item to become visible and clickable,
+     * and then clicks on the child item. If the child item is not found within the wait time,
+     * it logs an appropriate message.
+     *
+     * @param parentLocator By locator for the parent menu element
+     * @param childLocator  By locator for the child submenu element
+     */
+    public void handleParentSubMenuWithClick(By parentLocator, By childLocator) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            // Click on the parent menu item
+            WebElement parentElement = wait.until(ExpectedConditions.elementToBeClickable(parentLocator));
+            parentElement.click();
+            System.out.println("Clicked on parent menu item.");
+
+            // Click on the child menu item
+            WebElement childElement = wait.until(ExpectedConditions.elementToBeClickable(childLocator));
+            childElement.click();
+            System.out.println("Clicked on child menu item.");
+
+        } catch (TimeoutException e) {
+            System.out.println("Child Locator not found.");
+        } catch (Exception e) {
+            System.out.println("Unexpected error while handling submenu: " + e.getMessage());
+        }
     }
 
     /**
@@ -359,6 +398,36 @@ public class ElementUtil {
         for (char c : ch) {
             act.sendKeys(getElement(locator), String.valueOf(c)).pause(500).perform();
         }
+    }
+
+    /**
+     * This method is used to enter the random number from 1-8 to enter in effortHrs fields
+     * @param locator
+     * @param value
+     */
+    public void doActionsSendNumberWithPause(By locator, String value) {
+        Actions act = new Actions(driver);
+        Random random = new Random();
+        WebElement element = getElement(locator);
+        // Clear the field using CTRL + A + BACKSPACE to ensure full wipe
+        act.click(element)
+                .keyDown(Keys.CONTROL)
+                .sendKeys("a")
+                .keyUp(Keys.CONTROL)
+                .sendKeys(Keys.BACK_SPACE)
+                .perform();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // Generate a random digit between 1 and 8
+        int randomDigit = 1 + random.nextInt(5);
+
+        // Send the random digit as a string with pause
+        act.sendKeys(getElement(locator), String.valueOf(randomDigit))
+                .pause(Duration.ofMillis(500))
+                .perform();
     }
 
     public void level4MenuSubMenuHandlingUsingClick(By level1, String level2, String level3, String level4)
