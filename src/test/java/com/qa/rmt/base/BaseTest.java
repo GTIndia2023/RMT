@@ -24,18 +24,20 @@ public class BaseTest {
     protected RequisitionPage requisitionPage;
     @Parameters({"browser"})
     @BeforeTest
-    public void setup(@Optional("chrome") String browserName) {
+    public void setup(@Optional("edge") String browserName) {
         df = new DriverManager();
         prop=df.initProp();
         if(browserName!=null){
             prop.setProperty("browser", browserName);
         }
-        driver=df.initDriver(prop);
+        driver=df.initDriver(prop);//This will call getDriver() internally
         loginPage = new LoginPage(driver);
     }
 
     @AfterTest
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }

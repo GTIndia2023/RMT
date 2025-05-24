@@ -7,8 +7,8 @@
         <listener class-name="RMT.Listeners.TestAllureListener">
 
         </listener>
-        <!-- <listener
-            class-name="com.qa.opencart.listeners.AnnotationTransformer" /> -->
+<!--        <listener-->
+<!--            class-name="RMT.Listeners.AnnotationTransformer" />-->
     </listeners>
 <!--    // Block number 1-->
 <!--    <test name="Login Page Test">-->
@@ -31,18 +31,18 @@
 
     // Block number 3
     <test name="Skill Master Page Test">
-        <parameter name="browser" value="Chrome" />
+        <parameter name="browser" value="edge" />
         <!--        <parameter name="url" value="https://www.jiocinema.com/" />-->
         <classes>
             <class name="com.qa.rmt.MyTest.SkillMasterTest" />
         </classes>
     </test>
-    // Block number 4
-    <test name="Create Requisition  Page Test">
-        <parameter name="browser" value="Chrome" />
-        <!--        <parameter name="url" value="https://www.jiocinema.com/" />-->
-        <classes>
-            <class name="com.qa.rmt.MyTest.RequisitionTest" />
-        </classes>
-    </test>
+<!--    // Block number 4-->
+<!--    <test name="Create Requisition  Page Test">-->
+<!--        <parameter name="browser" value="edge" />-->
+<!--        &lt;!&ndash;        <parameter name="url" value="https://www.jiocinema.com/" />&ndash;&gt;-->
+<!--        <classes>-->
+<!--            <class name="com.qa.rmt.MyTest.RequisitionTest" />-->
+<!--        </classes>-->
+<!--    </test>-->
 </suite>
