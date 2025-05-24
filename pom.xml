@@ -28,6 +28,12 @@
       <artifactId>selenium-java</artifactId>
       <version>4.25.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.titusfortner/selenium-logger -->
+    <dependency>
+      <groupId>com.titusfortner</groupId>
+      <artifactId>selenium-logger</artifactId>
+      <version>2.4.0</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/org.testng/testng -->
     <dependency>
       <groupId>org.testng</groupId>
@@ -76,7 +82,7 @@
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.9.2</version>
+      <version>6.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
     <dependency>

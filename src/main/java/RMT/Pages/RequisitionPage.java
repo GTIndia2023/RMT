@@ -113,8 +113,8 @@ public class RequisitionPage {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-//        jsUtil.scrollIntoView(eleutil.getElement(startDate));
-//        eleutil.doActionsSendKeysWithPause(startDate,"03-03-2025",5);
+        jsUtil.scrollIntoView(eleutil.getElement(startDate));
+        eleutil.doActionsSendKeysWithPause(startDate,"27-05-2025",5);
         eleutil.doActionsClick(CompetencyDropown);
         eleutil.sendKeysWithWait(CompetencyDropown,"Due Diligence",3);
         try {

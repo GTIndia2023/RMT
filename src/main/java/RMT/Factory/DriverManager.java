@@ -3,7 +3,8 @@ package RMT.Factory;
 import RMT.Constants.AppConstants;
 import RMT.Errors.AppError;
 import RMT.Exceptions.BrowserException;
-import io.github.bonigarcia.wdm.WebDriverManager;
+//import io.github.bonigarcia.wdm.WebDriverManager;
+import com.titusfortner.logging.SeleniumLogger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -16,12 +17,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Driver;
 import java.util.Properties;
 
 public class DriverManager {
 
     WebDriver driver;
     Properties prop;
+    OptionsManager optionsManager;
     public static ThreadLocal<WebDriver>tlDriver=new ThreadLocal<WebDriver>();
 
 
@@ -30,16 +33,19 @@ public class DriverManager {
 
         String browserName= prop.getProperty("browser");
         System.out.println("Browser name is "+ browserName);
+        optionsManager = new OptionsManager(prop);
         switch (browserName.trim().toLowerCase()){
             case "chrome":
-                tlDriver.set(new ChromeDriver());
+                //SeleniumLogger.enable();
+                tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
                 break;
             case "firefox":
-                tlDriver.set(new FirefoxDriver());
+                tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
                 break;
             case "edge":
                 System.out.println("Loaded config: " + prop);
-                tlDriver.set(new EdgeDriver());
+                //SeleniumLogger.enable();
+                tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
                 break;
             default:
                 System.out.println("Please pass the right browser"+ browserName);
@@ -53,7 +59,7 @@ public class DriverManager {
 
     /**
      * get the local thread copy of the driver
-     * @return
+     * @return driver copy of the ThreadLocal driver
      */
     public static WebDriver getDriver(){
         return tlDriver.get();
