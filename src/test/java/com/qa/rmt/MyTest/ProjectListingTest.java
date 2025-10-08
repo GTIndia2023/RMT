@@ -26,16 +26,27 @@ public class ProjectListingTest extends BaseTest {
 
     }
     @Test(priority = 3)
-    public void updateAllocationTest(){
-        String actualStatus=projectPage.updateAllocation();
+    public void updateAllocationProjectListingsTest(){
+        String actualStatus=projectPage.updateAllocationFromProjectListingPage();
         Assert.assertEquals(actualStatus,AppConstants.UPDATED_ALOCATION_STATUS,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
     }
     @Test(priority = 4)
-    public void updateAddDelegate(){
-        String actualMesssage=projectPage.checkAllocateDelegate();
-        Assert.assertEquals(actualMesssage,AppConstants.ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE,AppError.UPDATE_ADD_DELEGATE_FUNCTIOANLTY_NOT_WORKING);
+    public void releaseAllocationTest(){
+        String actualStatus=projectPage.checkReleaseResource();
+        Assert.assertEquals(actualStatus,AppConstants.RESOURCE_RELEASED_SUCCESSFULLY,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
     }
     @Test(priority = 5)
+    public void updateAllocationGridTest(){
+        String actualStatus=projectPage.updateAllocationFromGridPage();
+        Assert.assertEquals(actualStatus,AppConstants.UPDATED_ALOCATION_STATUS,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
+    }
+
+    @Test(priority = 6)
+    public void addDescriptionTextTest(){
+        String actualMesssage=projectPage.checkadddingDescription();
+        Assert.assertEquals(actualMesssage,AppConstants.ADD_UPDATE_DELEGATE_SUCCESS_MESSAGE,AppError.UPDATE_ADD_DELEGATE_FUNCTIOANLTY_NOT_WORKING);
+    }
+    @Test(priority = 7)
     public void navigateToSkillMasterTest() throws InterruptedException {
         skillmasterPage=projectPage.navigateToskillMasterPage();
         Assert.assertEquals(skillmasterPage.getSkillMasterPageTitle(),AppConstants.SKILL_MASTER_PAGE_TITLE,AppError.TITLE_NOT_FOUND);

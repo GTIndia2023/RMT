@@ -7,7 +7,9 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -296,12 +298,14 @@ public class ElementUtil {
      */
     public void handleCompetencyMenue(By parentLocator, String competency ) {
         Actions act = new Actions(driver);
+        //By competencyChoice = By.xpath("(//li[text()='Forensic'])");
         doClick(parentLocator);// Clicking on competency dropdown
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        //doActionsClick(competencyChoice);
         act.sendKeys(competency).perform();
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
@@ -422,7 +426,7 @@ public class ElementUtil {
             throw new RuntimeException(e);
         }
         // Generate a random digit between 1 and 8
-        int randomDigit = 1 + random.nextInt(5);
+        int randomDigit = 9 + random.nextInt(5);
 
         // Send the random digit as a string with pause
         act.sendKeys(getElement(locator), String.valueOf(randomDigit))
@@ -734,4 +738,13 @@ public class ElementUtil {
             throw new RuntimeException("page is not loaded");
         }
     }
-}
+
+    // ✅ Helper method to calculate next working day
+    public LocalDate getNextWorkingDayExcludingWeekends(LocalDate currentDate) {
+        LocalDate fromDate = null;
+        LocalDate nextDay = fromDate.plusDays(1); // Start from tomorrow
+        while (nextDay.getDayOfWeek() == DayOfWeek.SATURDAY || nextDay.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            nextDay = nextDay.plusDays(1);
+        }
+        return nextDay;
+}}

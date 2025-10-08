@@ -21,6 +21,7 @@ public class AppError {
     public static  final String ROWS_TEXT_NOT_FOUND="===========ROWS TEXT NOT FOUND=========";
 
     public static final String REVIEWER_APPROVAL_FLOW_IS_ENABLED="=======Allocation Updation Flow Failed======";
+    public static final String RESOURCE_RELEASED_FAILURE="======Resource Released FAILED=========";
 
     public static final String UPDATE_ADD_DELEGATE_FUNCTIOANLTY_NOT_WORKING="======jOB Add/Update Delegate Functionality Not Working=========";
 

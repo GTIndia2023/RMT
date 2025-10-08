@@ -6,11 +6,13 @@ import RMT.Utils.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,6 +64,15 @@ public class SkillMasterPage {
     private By employeeDsgn = By.xpath("(//span[text()='Assistant Manager'])");
     private By clickContains=By.xpath("//div[text()='Contains']");
     private By selectEquals=By.xpath("//div[@role='option' and .//span[text()='Equals']]");
+    private By mySkills=By.xpath("//li[text()='My skills']");
+    private By addNewSkill=By.xpath("//button[text()='Add new Skill']");
+    private By skilName=By.xpath("(//input[@type='text'])[2]");
+    private By proficiency=By.xpath("(//input[@type='text'])[3]");
+    private By selectingStarting=By.xpath("//li[text()='Starting']");
+    private By saveBtn2=By.xpath("//button[text()='Save']");
+    private By skillAddedMessage=By.xpath("//div[@class='MuiAlert-message css-1xsto0d']");
+    private By skillsOptions=By.xpath("//li[@aria-selected='false']");
+    private By competencyInputChoice= By.xpath("(//li[text()='Forensic'])");
 
 
     //3.Page actions
@@ -108,7 +119,7 @@ public class SkillMasterPage {
         JavascriptUtil jsUtil = new JavascriptUtil(driver);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -142,6 +153,12 @@ public class SkillMasterPage {
             jsUtil.zoomFirefoxChromeEdgeSafari("50");
             jsUtil.clickElementByJS(driver.findElement(By.xpath("//a[@href='#']")));
             eleutil.handleCompetencyMenue(CompetencyInput, competency);//Clicking on competency field and selecting the value from Excel
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            //eleutil.doActionsClick(competencyInputChoice);
             LocalDateTime editEnd = LocalDateTime.now();
             Duration editDuration = Duration.between(editStart, editEnd);
             System.out.println("Time taken for skill edit operation: " + editDuration.toMinutes() + " min " + editDuration.toSecondsPart() + " sec");
@@ -212,7 +229,7 @@ public class SkillMasterPage {
             jsUtil.zoomFirefoxChromeEdgeSafari("50");
             System.out.println(text);
             eleutil.doActionsClick(popUpText);
-            jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
+            jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[text()='Save'])")));
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
             eleutil.clickWhenReady(yesBtn, TimeUtil.DEFAULT_TIME_OUT);
             String successMessage = eleutil.waitForElementVisible(successMsg, TimeUtil.MEDIUM_TIME_OUT).getText();
@@ -610,6 +627,102 @@ public class SkillMasterPage {
         if (resultSkillName.equalsIgnoreCase(AppConstants.EMPLOYEE_SKILL_DESIGNATION)) {
             return true;
         } else {
+            return false;
+        }
+    }
+
+    public boolean addSkill() {
+        Actions act = new Actions(driver);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        try {
+            // 1) Navigate into “My Skills” → “Add New Skill”
+            Thread.sleep(2000);
+            eleutil.doActionsClick(skillsBtn);
+            eleutil.handleParentSubMenu(skillsBtn, mySkills);
+            Thread.sleep(2000);
+            eleutil.doActionsClick(addNewSkill);
+            Thread.sleep(2000);
+
+            // 2) Locate and open the Skill dropdown input (second text field)
+            By skillNameLocator = By.xpath("(//input[@type='text'])[2]");
+            WebElement skillInput = wait.until(
+                    ExpectedConditions.elementToBeClickable(skillNameLocator)
+            );
+            skillInput.click();
+            Thread.sleep(500);
+
+            // 3) Fetch all skill‐option WebElements from the dropdown
+            //    'skillsOptions' should locate each <li> representing a dropdown item
+            List<WebElement> skillElements = eleutil.getElements(skillsOptions);
+            if (skillElements.isEmpty()) {
+                System.out.println("❌ No skill options available");
+                return false;
+            }
+
+            // 4) Find the first truly enabled <li> whose class contains “MuiAutocomplete-option”
+            WebElement chosenOption = null;
+            String chosenSkill = null;
+            for (WebElement option : skillElements) {
+                String ariaDisabled = option.getAttribute("aria-disabled");
+                String classAttr = option.getAttribute("class");
+                boolean isDisabled = "true".equalsIgnoreCase(ariaDisabled);
+                boolean isOptionClass = classAttr != null && classAttr.contains("MuiAutocomplete-option");
+
+                if (isOptionClass && !isDisabled) {
+                    String text = option.getText().trim();
+                    if (!text.isEmpty()) {
+                        chosenOption = option;
+                        chosenSkill = text;
+                        break;
+                    }
+                }
+            }
+
+            if (chosenOption == null) {
+                System.out.println("❌ No unused (enabled) skill found");
+                return false;
+            }
+
+            // 5) Move to that option and click via Actions (instead of JS click)
+            act.moveToElement(chosenOption)
+                    .pause(Duration.ofMillis(200))
+                    .click()
+                    .perform();
+            System.out.println("✅ Selected skill: " + chosenSkill);
+
+            // 6) Handle proficiency selection (caller will implement details)
+            eleutil.doActionsClick(proficiency);
+            Thread.sleep(1000);
+            eleutil.getElement(selectingStarting);
+            act.sendKeys(Keys.ARROW_DOWN).perform();
+            act.sendKeys(Keys.ENTER).perform();
+            Thread.sleep(1000);
+
+            // 7) Click the Save button
+            eleutil.doActionsClick(saveBtn2);
+            Thread.sleep(500);
+
+            // 8) Wait for and verify the success message
+            WebElement successElement = eleutil.waitForElementVisible(
+                    skillAddedMessage, TimeUtil.MEDIUM_TIME_OUT
+            );
+            String successMessage = successElement.getText().trim();
+            System.out.println("Skill updated: " + successMessage);
+
+            return successMessage.equalsIgnoreCase(
+                    AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE
+            );
+        }
+        catch (InterruptedException ie) {
+            throw new RuntimeException("Interrupted while waiting", ie);
+        }
+        catch (TimeoutException te) {
+            System.out.println("❌ Timeout waiting for element: " + te.getMessage());
+            return false;
+        }
+        catch (NoSuchElementException nsee) {
+            System.out.println("❌ Could not locate element: " + nsee.getMessage());
             return false;
         }
     }

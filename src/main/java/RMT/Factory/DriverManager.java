@@ -3,7 +3,7 @@ package RMT.Factory;
 import RMT.Constants.AppConstants;
 import RMT.Errors.AppError;
 import RMT.Exceptions.BrowserException;
-//import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import com.titusfortner.logging.SeleniumLogger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -36,20 +36,41 @@ public class DriverManager {
         optionsManager = new OptionsManager(prop);
         switch (browserName.trim().toLowerCase()){
             case "chrome":
-                //SeleniumLogger.enable();
-                tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
+                SeleniumLogger.enable();
+                try {
+                    System.out.println("Setting up chrome driver....");
+                    tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
+                    System.out.println("ChromeDiver initialized successfully" + tlDriver.get());
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    System.out.println("ChromeDriver failed to initalized");
+                }
                 break;
             case "firefox":
                 tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
                 break;
             case "edge":
                 System.out.println("Loaded config: " + prop);
-                //SeleniumLogger.enable();
-                tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
+                SeleniumLogger.enable();
+                // Use WebDriverManager to handle EdgeDriver
+                try {
+                    System.out.println("setting up edge driver.....");
+                    tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
+                    System.out.println("EdgeDriver initialized successfully"+ tlDriver.get());
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    System.out.println(" EdgeDriver failed to initialized");
+            }
                 break;
             default:
                 System.out.println("Please pass the right browser"+ browserName);
                 throw new BrowserException(AppError.BROWSER_NOT_FOUND );
+        }
+        WebDriver wd= getDriver();
+        if (wd==null){
+            throw new RuntimeException("Driver initialization failed! WebDriver is null.");
         }
         getDriver().manage().deleteAllCookies();
         getDriver().manage().window().maximize();

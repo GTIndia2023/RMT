@@ -1,10 +1,7 @@
 package com.qa.rmt.base;
 
 import RMT.Factory.DriverManager;
-import RMT.Pages.LoginPage;
-import RMT.Pages.ProjectListingsPage;
-import RMT.Pages.RequisitionPage;
-import RMT.Pages.SkillMasterPage;
+import RMT.Pages.*;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -22,6 +19,8 @@ public class BaseTest {
     protected ProjectListingsPage projectPage;
     protected SkillMasterPage skillmasterPage;
     protected RequisitionPage requisitionPage;
+    protected ReportsPage reportsPage;
+    protected BudgetPage budgetPage;
     @Parameters({"browser"})
     @BeforeTest
     public void setup(@Optional("edge") String browserName) {
