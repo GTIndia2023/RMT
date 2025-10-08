@@ -70,15 +70,22 @@ public class SkillMasterTest extends BaseTest {
     @Description("This test is checking that user is able to perform skill search  ")
     @Owner("Piyush Wadhwa")
     @Severity(SeverityLevel.NORMAL)
-    public void skillSearchBySkillName(){
+    public void skillSearchBySkillNameTest(){
         Assert.assertTrue(skillmasterPage.skillSearch(),AppConstants.SKILL_SEARCH_BY_SKILL_NAME_NOT_FOUND);
     }
     @Test(priority = 6)
     @Description("This test is checking that user is able to perform skill search  ")
     @Owner("Piyush Wadhwa")
     @Severity(SeverityLevel.NORMAL)
-    public void skillSearchByEmplName(){
+    public void skillSearchByEmplNameTest(){
         Assert.assertTrue(skillmasterPage.searchByEmployeeName(),AppConstants.SKILL_SEARCH_BY_EMPLOYEE_NAME_NOT_FOUND);
     }
+//    @Test(priority = 7)
+//    @Description("This test is checking that user is able to add a skill ")
+//    @Owner("Piyush Wadhwa")
+//    @Severity(SeverityLevel.CRITICAL)
+//    public void addingSkillTest(){
+//        Assert.assertTrue(skillmasterPage.addSkill(),AppConstants.SKILL_SEARCH_BY_EMPLOYEE_NAME_NOT_FOUND);
+//    }
 
 }

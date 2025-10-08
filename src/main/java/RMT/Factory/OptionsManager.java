@@ -18,6 +18,17 @@ public class OptionsManager {
         this.prop = prop;
     }
 
+    /**
+     * Creates an instance of ChromeOptions based on the properties provided in the constructor.
+     * The properties that are used to configure the ChromeOptions are:
+     * <ul>
+     *     <li>headless: if true, the test will be run in headless mode.</li>
+     *     <li>incognito: if true, the test will be run in incognito mode.</li>
+     *     <li>remote: if true, the test will be run in remote mode.</li>
+     * </ul>
+     *
+     * @return the configured ChromeOptions
+     */
     public ChromeOptions getChromeOptions() {
         co = new ChromeOptions();
 
@@ -43,6 +54,17 @@ public class OptionsManager {
         return co;
     }
 
+    /**
+     * Returns an instance of FirefoxOptions configured based on the properties provided in the constructor.
+     * The properties that are used to configure the FirefoxOptions are:
+     * <ul>
+     *     <li>headless: if true, the test will be run in headless mode.</li>
+     *     <li>incognito: if true, the test will be run in incognito mode.</li>
+     *     <li>remote: if true, the test will be run in remote mode.</li>
+     * </ul>
+     *
+     * @return the configured FirefoxOptions
+     */
     public FirefoxOptions getFirefoxOptions() {
         fo = new FirefoxOptions();
 
@@ -66,6 +88,17 @@ public class OptionsManager {
         return fo;
     }
 
+    /**
+     * Creates an instance of EdgeOptions based on the properties provided in the constructor.
+     * The properties that are used to configure the EdgeOptions are:
+     * <ul>
+     *     <li>headless: if true, the test will be run in headless mode.</li>
+     *     <li>incognito: if true, the test will be run in incognito mode.</li>
+     *     <li>remote: if true, the test will be run in remote mode.</li>
+     * </ul>
+     *
+     * @return the configured EdgeOptions
+     */
     public EdgeOptions getEdgeOptions() {
         eo = new EdgeOptions();
 

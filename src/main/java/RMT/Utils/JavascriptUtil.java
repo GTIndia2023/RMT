@@ -150,4 +150,11 @@ public class JavascriptUtil {
         //document.getElementById('input-email').value ='tom@gmail.com'
     }
 
+    public void executeScript(String s, WebElement exportIcon2) {
+
+    }
+
+    public void scrollPageToBottom() {
+
+    }
 }
