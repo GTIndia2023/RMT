@@ -2,7 +2,7 @@ package RMT.Utils;
 
 import RMT.Exceptions.ElementException;
 import io.qameta.allure.Step;
-import org.checkerframework.checker.units.qual.C;
+//import org.checkerframework.checker.units.qual.C;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
@@ -298,7 +298,7 @@ public class ElementUtil {
      */
     public void handleCompetencyMenue(By parentLocator, String competency ) {
         Actions act = new Actions(driver);
-        //By competencyChoice = By.xpath("(//li[text()='Forensic'])");
+        //By competencyChoice = By.xpath("(//li[text()='Business Process Solution'])");
         doClick(parentLocator);// Clicking on competency dropdown
         try {
             Thread.sleep(2000);

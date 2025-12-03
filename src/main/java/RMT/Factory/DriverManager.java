@@ -44,7 +44,7 @@ public class DriverManager {
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                    System.out.println("ChromeDriver failed to initalized");
+                    System.out.println("ChromeDriver failed to initalized"+e);
                 }
                 break;
             case "firefox":
@@ -61,7 +61,7 @@ public class DriverManager {
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                    System.out.println(" EdgeDriver failed to initialized");
+                    System.out.println(" EdgeDriver failed to initialized"+e);
             }
                 break;
             default:
