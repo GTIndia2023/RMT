@@ -60,7 +60,7 @@ public class LoginPage {
     @Step("Login the Application wih username: {0} and password: ********")
     public ProjectListingsPage doLogin(String un , String pswd){
         try {
-            Thread.sleep(6000);
+            Thread.sleep(18000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
