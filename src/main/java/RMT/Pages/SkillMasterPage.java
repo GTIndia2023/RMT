@@ -61,7 +61,7 @@ public class SkillMasterPage {
     private By searchEmp=By.xpath("// input[@placeholder='Search Employee']");
     private By searchedResult = By.xpath("//span[text()='Consultant']");
     private By toggleBtn = By.xpath("(//input[@type='checkbox'])[1]");
-    private By employeeDsgn = By.xpath("(//span[text()='Assistant Manager'])");
+    private By employeeDsgn = By.xpath("(//span[text()='Associate Director'])");
     private By clickContains=By.xpath("//div[text()='Contains']");
     private By selectEquals=By.xpath("//div[@role='option' and .//span[text()='Equals']]");
     private By mySkills=By.xpath("//li[text()='My skills']");
@@ -614,7 +614,7 @@ public class SkillMasterPage {
         }
         eleutil.doActionsClick(toggleBtn);
         eleutil.doActionsClick(searchEmp);
-        eleutil.doActionsSendKeys(searchEmp, "Ritika.sharma1@walkerchandiok.in");
+        eleutil.doActionsSendKeys(searchEmp, "RMSED.ResourceReq2@IN.GT.COM");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

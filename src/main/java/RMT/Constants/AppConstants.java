@@ -6,11 +6,11 @@ public class AppConstants {
     public static final String LOGIN_PAGE_TITLE="Sign in to your account";
     public static final String PROJECT_LISTINGS_PAGE_TITILE="Resource Management Tool";
     public static final String PROJECT_LISTING_PAGE_URL="https://rms-uat.wcgt.in/";
-    public static final String SKILL_MASTER_PAGE_TITLE="Resource Management Tool";
+    public static final String SKILL_MASTER_PAGE_TITLE="OptiWise";
     public static final String REPORTS_PAGE_TITLE="Resource Management Tool";
-    public static final String SKILL_MASTER_PAGE_URL="https://rms-uat.wcgt.in/skillmaster";
-    public static final String REPORTS_PAGE_URL="https://rms-uat.wcgt.in/reports";
-    public static final String REQUISITON_PAGE_URL="https://rms-uat.wcgt.in/create-requisition/085897/9-2-INTEL%2F9688-DET-%20R-2425-00003";
+    public static final String SKILL_MASTER_PAGE_URL="https://uat.optiwise.wcgt.in/skillmaster";
+    public static final String REPORTS_PAGE_URL="https://uat.optiwise.wcgt.in/reports";
+    public static final String REQUISITON_PAGE_URL="https://uat.optiwise.wcgt.in/create-requisition/085897/9-2-INTEL%2F9688-DET-%20R-2425-00003";
     public static final String SKILL_MASTER_DATA_SHEET_NAME="SkillMaster";
     public static final String Designation_MASTER_DATA_SHEET_NAME="Designation Master";
     public static final String SKILL_MASTER_SKILL_ADDITON_SUCCESS_MESSAGE="Skill Created.";
@@ -45,7 +45,7 @@ public class AppConstants {
     public static final String DELETE_REQUISITON_BUTTON="====Delete Requisition Box Is Not Visible=====";
     public static final String EXPORT_BUTTON_ON_REQUISITON_PAGE="========Export btn is not working======";
     public static final String SEARCHED_SKILL_RESULT="Consultant";
-    public static final String EMPLOYEE_SKILL_DESIGNATION="Assistant Manager";
+    public static final String EMPLOYEE_SKILL_DESIGNATION="Associate Director ";
     public static final String SKILL_SEARCH_BY_SKILL_NAME_NOT_FOUND="====SKILL NAME NOT FOUND======";
     public static final String SKILL_SEARCH_BY_EMPLOYEE_NAME_NOT_FOUND="====SKILL NOT FOUND TAGGED TO EMPLOYEE======";
     public static final String UPDATED_ALOCATION_STATUS="Allocation Complete";
