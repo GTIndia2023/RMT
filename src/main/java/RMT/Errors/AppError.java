@@ -24,5 +24,6 @@ public class AppError {
     public static final String RESOURCE_RELEASED_FAILURE="======Resource Released FAILED=========";
 
     public static final String UPDATE_ADD_DELEGATE_FUNCTIOANLTY_NOT_WORKING="======jOB Add/Update Delegate Functionality Not Working=========";
+    public static final String SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH= "Skill Approval Functionality Not Working";
 
 }

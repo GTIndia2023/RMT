@@ -133,11 +133,6 @@ public class JavascriptUtil {
         JavascriptExecutor js = ((JavascriptExecutor) driver);
         js.executeScript("arguments[0].style.backgroundColor = '" + color + "'", element);
         //Green->gw->Green->gw
-
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-        }
     }
 
 

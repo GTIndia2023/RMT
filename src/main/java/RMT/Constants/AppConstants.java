@@ -45,7 +45,7 @@ public class AppConstants {
     public static final String DELETE_REQUISITON_BUTTON="====Delete Requisition Box Is Not Visible=====";
     public static final String EXPORT_BUTTON_ON_REQUISITON_PAGE="========Export btn is not working======";
     public static final String SEARCHED_SKILL_RESULT="Consultant";
-    public static final String EMPLOYEE_SKILL_DESIGNATION="Associate Director ";
+    public static final String EMPLOYEE_SKILL_DESIGNATION="Associate Director";
     public static final String SKILL_SEARCH_BY_SKILL_NAME_NOT_FOUND="====SKILL NAME NOT FOUND======";
     public static final String SKILL_SEARCH_BY_EMPLOYEE_NAME_NOT_FOUND="====SKILL NOT FOUND TAGGED TO EMPLOYEE======";
     public static final String UPDATED_ALOCATION_STATUS="Allocation Complete";
@@ -108,4 +108,6 @@ public class AppConstants {
     public static final String BUDGET_PAGE_CHART4_DESIGNATION_DATA="======DESIGNATION DATA NOT VISIBLE=====";
     public static final String BUDGET_PAGE_CHART4_BU_DATA="======BUISNESS UNIT DATA NOT VISIBLE=====";
     public static final String BUDGET_PAGE_CHART4_COMPETENCY_DATA="======COMPETENCY  DATA NOT VISIBLE=====";
+    public static final String SKILL_REVIEW_POP_UP_MESSAGE_FOR_SC = "Skill approved successfully";
+    public static final String Skill_Status_Approved_From_SuperCoach="Approved";
 }

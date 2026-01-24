@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 public class ElementUtil {
     private WebDriver driver;
 
@@ -747,4 +750,66 @@ public class ElementUtil {
             nextDay = nextDay.plusDays(1);
         }
         return nextDay;
-}}
+
+    }
+
+    public void clickStable(By locator, int timeoutSec) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
+        WebElement el = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});", el);
+        // try native click, fallback to JS click if intercepted
+        try {
+            el.click();
+        } catch (ElementClickInterceptedException e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+        }
+    }
+
+    /**
+     * Reliably enters text in a field:
+     * - waits visible + enabled
+     * - clears (with Ctrl+A + Delete)
+     * - types
+     * - verifies the value is present (if it's a text/password input, checks value attribute)
+     * - retries up to 2 times
+     */
+    public void enterTextReliable(By locator, String text, int timeoutSec) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
+        int attempts = 0;
+
+        while (attempts < 3) {
+            WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            if (!input.isEnabled()) {
+                throw new IllegalStateException("Input not enabled for locator: " + locator);
+            }
+
+            // focus + clear robustly
+            input.click();
+            input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+            input.sendKeys(Keys.DELETE);
+
+            // type
+            input.sendKeys(text);
+
+            // verify input value (for <input type='password'> the value is present but masked in UI)
+            String value = input.getAttribute("value");
+            if (value != null && !value.isEmpty()) {
+                return; // success
+            }
+
+            attempts++;
+        }
+
+        throw new IllegalStateException("Failed to enter text into: " + locator +
+                " after retries. The element may be losing focus or being re-rendered.");
+    }
+
+    /**
+     * Optional: waits for overlay/spinner to disappear
+     */
+    public void waitForOverlayToDisappear(By overlayLocator, int timeoutSec) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(overlayLocator));
+    }
+}
