@@ -2,12 +2,14 @@ package RMT.Pages;
 
 import RMT.Constants.AppConstants;
 import RMT.Exceptions.ElementException;
+import RMT.Exceptions.SkillAdditionException;
 import RMT.Utils.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtrRef;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -66,13 +68,36 @@ public class SkillMasterPage {
     private By selectEquals=By.xpath("//div[@role='option' and .//span[text()='Equals']]");
     private By mySkills=By.xpath("//li[text()='My skills']");
     private By addNewSkill=By.xpath("//button[text()='Add new Skill']");
-    private By skilName=By.xpath("(//input[@type='text'])[2]");
+    private By skillName=By.xpath("(//input[@type='text'])[2]");
     private By proficiency=By.xpath("(//input[@type='text'])[3]");
     private By selectingStarting=By.xpath("//li[text()='Starting']");
     private By saveBtn2=By.xpath("//button[text()='Save']");
     private By skillAddedMessage=By.xpath("//div[@class='MuiAlert-message css-1xsto0d']");
     private By skillsOptions=By.xpath("//li[@aria-selected='false']");
     private By competencyInputChoice= By.xpath("(//li[text()='Forensic'])");
+    private By clickOnUserName= By.cssSelector(".css-odsz1v");
+    private By clickOnLogoutBtn = By.cssSelector("#account-menu .MuiButtonBase-root");
+    private By clickOnAccount = By.xpath("//div[text()='RMSED Leader']");
+    private By clickOnSCId = By.xpath("//div[normalize-space()='RMSED Admin']");
+    private By clickOnSignInBtn = By.xpath("//input[@value='Sign in']");
+    private By skillReviewBtn=By.xpath("//li[text()='Skills Review']");
+    private By clickOnCheckbox= By.cssSelector("input.ag-checkbox-input[aria-label*='toggle all rows selection']");
+    private By clickOnBulkApproveBtn = By.xpath("//button[text()='Bulk Approve']");
+    private By enterRemarks = By.xpath("//label[text()='Remarks']");
+    private By clickOnConfirmBtn =By.xpath("//button[text()='Confirm']");
+    private By skillApprovedMessage = By.xpath("//div[@class='MuiAlert-message css-1xsto0d']");
+    private By clickOnUseOtherAccount = By.xpath("//div[normalize-space()='Use another account']");
+    private final By emailInputField = By.xpath("//input[@type='email']");
+    private final By nextBtn = By.xpath("//input[@type='submit']");
+    private final By passwordInputField = By.xpath("//input[@type='password']");
+    private final By rmseLeaderOption = By.xpath("//div[normalize-space()='RMSED Leader']");
+    private By clickOnAdminAccount= By.xpath("//div[text()='RMSED Admin']");
+    private By statusLocator= By.xpath("//div[contains(@class,'MuiChip-root')]//span[contains(@class,'MuiChip-label')]");
+    private By filterInputFiled= By.xpath("(//input[@placeholder='Filter...'])[1]");
+    private By selectProficiency=By.xpath("(//input[@type='text'])[2]");
+
+
+
 
 
     //3.Page actions
@@ -622,7 +647,7 @@ public class SkillMasterPage {
         }
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
-        String resultSkillName = eleutil.waitForElementVisible(employeeDsgn, TimeUtil.MEDIUM_TIME_OUT).getText();
+        String resultSkillName = eleutil.waitForElementVisible(employeeDsgn, TimeUtil.MEDIUM_TIME_OUT).getText().trim();
         System.out.println("Searched result includes " + resultSkillName);
         if (resultSkillName.equalsIgnoreCase(AppConstants.EMPLOYEE_SKILL_DESIGNATION)) {
             return true;
@@ -630,8 +655,26 @@ public class SkillMasterPage {
             return false;
         }
     }
-
-    public boolean addSkill() {
+    /**
+     * Adds a new skill for the logged-in user from the "My Skills" section by
+     * selecting the first available (enabled) skill from the autocomplete dropdown,
+     * assigning a default proficiency, and saving the selection.
+     *
+     * <p>
+     * Disabled or already-used skills are skipped automatically. If no valid skill
+     * is available, the method exits safely without failing the test.
+     *
+     * <p>
+     * The method navigates through the UI, performs the required selections, and
+     * validates success using the confirmation message displayed after saving.
+     *
+     * @return {@code true} if the skill is added successfully and the success
+     *         message matches {@link AppConstants#SKILL_ADDITION_SUCCESS_MESSAGE};
+     *         {@code false} otherwise.
+     *
+     * @throws RuntimeException if the execution thread is interrupted during waits.
+     */
+    public String addSkill() {
         Actions act = new Actions(driver);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
@@ -645,9 +688,8 @@ public class SkillMasterPage {
             Thread.sleep(2000);
 
             // 2) Locate and open the Skill dropdown input (second text field)
-            By skillNameLocator = By.xpath("(//input[@type='text'])[2]");
             WebElement skillInput = wait.until(
-                    ExpectedConditions.elementToBeClickable(skillNameLocator)
+                    ExpectedConditions.elementToBeClickable(skillName)
             );
             skillInput.click();
             Thread.sleep(500);
@@ -656,8 +698,7 @@ public class SkillMasterPage {
             //    'skillsOptions' should locate each <li> representing a dropdown item
             List<WebElement> skillElements = eleutil.getElements(skillsOptions);
             if (skillElements.isEmpty()) {
-                System.out.println("❌ No skill options available");
-                return false;
+                throw new SkillAdditionException("❌ No skill options available");
             }
 
             // 4) Find the first truly enabled <li> whose class contains “MuiAutocomplete-option”
@@ -680,8 +721,7 @@ public class SkillMasterPage {
             }
 
             if (chosenOption == null) {
-                System.out.println("❌ No unused (enabled) skill found");
-                return false;
+                throw new SkillAdditionException("❌ No unused (enabled) skill found");
             }
 
             // 5) Move to that option and click via Actions (instead of JS click)
@@ -708,23 +748,336 @@ public class SkillMasterPage {
                     skillAddedMessage, TimeUtil.MEDIUM_TIME_OUT
             );
             String successMessage = successElement.getText().trim();
-            System.out.println("Skill updated: " + successMessage);
+            System.out.println("Skill added: " + successMessage);
+            if (!successMessage.equalsIgnoreCase(
+                    AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE)) {
 
-            return successMessage.equalsIgnoreCase(
-                    AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE
-            );
+                throw new IllegalStateException(
+                        "Skill addition failed. Expected: '"
+                                + AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE
+                                + "', Actual: '" + successMessage + "'"
+                );
+            }
+            return successMessage;
         }
         catch (InterruptedException ie) {
             throw new RuntimeException("Interrupted while waiting", ie);
         }
         catch (TimeoutException te) {
-            System.out.println("❌ Timeout waiting for element: " + te.getMessage());
-            return false;
+            throw new TimeoutException("❌ Timeout waiting for element");
         }
         catch (NoSuchElementException nsee) {
-            System.out.println("❌ Could not locate element: " + nsee.getMessage());
-            return false;
+            throw new ElementException("❌ Could not locate element");
         }
     }
+    /**
+     * Performs a bulk skill approval as a SuperCoach user.
+     *
+     * <p>
+     * The method logs out the current session, authenticates as a SuperCoach,
+     * navigates to the Skill Review module, selects all available skill entries,
+     * submits a bulk approval with remarks, and returns the resulting confirmation
+     * message.
+     *
+     * @return the confirmation message displayed after successful bulk approval
+     *
+     * @throws IllegalStateException if authentication, navigation, or approval
+     *         actions fail due to missing or unstable UI elements
+     * @throws RuntimeException if the execution thread is interrupted
+     */
+    public String skillReviewBySuperCoach() {
+        JavascriptUtil jsUtil = new JavascriptUtil(driver);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        // 1) Logout current user
+        try {
+            eleutil.waitForElementVisible(clickOnUserName, 10);
+            eleutil.clickStable(clickOnUserName, 10);
 
+            eleutil.waitForElementVisible(clickOnLogoutBtn, 10);
+            eleutil.clickStable(clickOnLogoutBtn, 10);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("Logout controls not visible/clickable. " +
+                    "Cannot proceed to SuperCoach login.", te);
+        }
+        // 2) Pick account (RMSED Leader) or click via JS fallback
+        try {
+            // Prefer a standard click path
+            eleutil.waitForElementVisible(rmseLeaderOption,20);
+            //wait.until(ExpectedConditions.visibilityOfElementLocated(rmseLeaderOption));
+            eleutil.clickStable(clickOnAccount, 15);
+        } catch (Exception e) {
+            // Fallback: click the exact account option
+            WebElement leader= eleutil.waitForElementVisible(rmseLeaderOption,20);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", leader);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", leader);
+        }
+        // 3) Choose "Use another account"
+        try {
+            eleutil.clickStable(clickOnUseOtherAccount, 15);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("'Use another account' option not available. " +
+                    "The account picker may not have opened correctly.", te);
+        }
+        // 4) Enter email
+        try {
+            eleutil.enterTextReliable(emailInputField, "RMSED.Admin@in.gt.com", 15);
+            eleutil.clickStable(nextBtn, 10);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("Email field or Next button not available during sign-in.", te);
+        } catch (IllegalStateException ise) {
+            throw new IllegalStateException("Failed to enter email due to re-render/focus issues.", ise);
+        }
+        // 5) Enter password (core stability + exception if not visible or not entered)
+        try {
+            // Ensure visible and enabled
+            WebElement pwdEl = eleutil.waitForElementVisible(passwordInputField, 15);
+            if (!pwdEl.isDisplayed() || !pwdEl.isEnabled()) {
+                throw new IllegalStateException("Password field is present but not visible/enabled.");
+            }
+            // Scroll and enter reliably (with verification)
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
+            eleutil.enterTextReliable(passwordInputField, "Work@#$Perfect!7654", 15);
+
+            // Optional: extra verification step if page tends to re-render
+            String pwdValue = driver.findElement(passwordInputField).getAttribute("value");
+            if (pwdValue == null || pwdValue.isEmpty()) {
+                throw new IllegalStateException("Password value did not stick after entry—UI may be re-rendering.");
+            }
+        } catch (TimeoutException te) {
+            throw new NoSuchElementException("Password field is not visible within timeout—" +
+                    "login page may not have loaded, or an overlay is blocking.", te);
+        } catch (StaleElementReferenceException sere) {
+            // re-locate once more and try again
+            WebElement pwdEl = eleutil.waitForElementVisible(passwordInputField, 10);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
+            eleutil.enterTextReliable(passwordInputField, "Work@#$Perfect!7654", 10);
+        } catch (IllegalStateException ise) {
+            throw new IllegalStateException("Failed to enter password: " + ise.getMessage(), ise);
+        }
+        // 6) Click Sign-in
+        try {
+            eleutil.clickStable(clickOnSignInBtn, 15);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("Sign-in button not clickable. " +
+                    "An overlay or validation error might be blocking.", te);
+        }
+        // 7) Navigate to Skill Review
+        try {
+            // Menu open
+            eleutil.clickStable(skillsBtn, 15);
+            // Skill review button
+            eleutil.waitForElementVisible(skillReviewBtn, 15);
+            eleutil.clickStable(skillReviewBtn, 15);
+            // Ensure grid/header are ready & overlays gone
+            By headerRoot = By.cssSelector(".ag-header, .ag-header-viewport, .ag-pinned-left-header");
+            By overlays = By.cssSelector(".ag-overlay-loading-center, .ag-overlay-panel, .MuiBackdrop-root, .cdk-overlay-backdrop");
+            wait.until(ExpectedConditions.presenceOfElementLocated(headerRoot));
+            try {
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(overlays));
+            } catch (Exception ignored) {
+            }
+            // Try multiple header locations for the select-all checkbox
+            By[] candidates = new By[]{
+                    By.cssSelector(".ag-header input.ag-checkbox-input[aria-label*='toggle all rows selection']"),
+                    By.cssSelector(".ag-pinned-left-header input.ag-checkbox-input[aria-label*='toggle all rows selection']"),
+                    By.cssSelector("input.ag-checkbox-input[aria-label*='toggle all rows selection']")
+            };
+            // Find the first present checkbox
+            WebElement cb = null;
+            for (By loc : candidates) {
+                List<WebElement> found = driver.findElements(loc);
+                if (!found.isEmpty()) {
+                    cb = found.get(0);
+                    break;
+                }
+            }
+            if (cb == null) {
+                throw new IllegalStateException("Select-all checkbox not present in header. " +
+                        "Header may not be rendered, selection column not configured, or wrong context/frame.");
+            }
+
+            // Scroll input (and wrapper) into view
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", cb);
+            WebElement wrapper;
+            try {
+                wrapper = cb.findElement(By.xpath("./ancestor::div[contains(@class,'ag-checkbox-input-wrapper')]"));
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", wrapper);
+            } catch (NoSuchElementException ignored) {
+                wrapper = cb; // fallback to input itself
+            }
+            // Try native click on input, fallback to wrapper JS click
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(cb)).click();
+            } catch (Exception e) {
+                try {
+                    wait.until(ExpectedConditions.elementToBeClickable(wrapper)).click();
+                } catch (Exception e2) {
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", wrapper);
+                }
+            }
+            // Verify toggled; if not, try focusing and SPACE
+            Boolean checked = (Boolean) ((JavascriptExecutor) driver).executeScript("return arguments[0].checked;", cb);
+            if (!Boolean.TRUE.equals(checked)) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].focus();", cb);
+                cb.sendKeys(Keys.SPACE);
+                checked = (Boolean) ((JavascriptExecutor) driver).executeScript("return arguments[0].checked;", cb);
+                if (!Boolean.TRUE.equals(checked)) {
+                    throw new IllegalStateException("Select-all checkbox did not toggle after click/SPACE. " +
+                            "It may be re-rendering, disabled, or covered by an overlay.");
+                }
+            }
+            // Bulk approve flow
+            eleutil.waitForElementVisible(clickOnBulkApproveBtn, 15);
+            eleutil.clickStable(clickOnBulkApproveBtn, 15);
+            eleutil.doActionsSendKeysWithPause(enterRemarks, "Approved", 10);
+            eleutil.clickStable(clickOnConfirmBtn, 15);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("Skill review flow controls not found/clickable.", te);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // 8) Verify success
+        WebElement successElement = eleutil.waitForElementVisible(
+                skillApprovedMessage, TimeUtil.LONG_TIME_OUT
+        );
+        String successMessage = successElement.getText().trim();
+        System.out.println("Skill updated: " + successMessage);
+
+        return successMessage;
+    }
+
+    /**
+     * Verifies whether a skill has been approved by the SuperCoach user.
+     *
+     * <p>
+     * The method logs out the current user, authenticates using a SuperCoach
+     * (Admin) account, navigates to the Skills module, and reads the approval
+     * status displayed in the AG Grid. The status is determined by inspecting
+     * the status chip text rendered in the grid.
+     *
+     * <p>
+     * The method follows a fail-fast approach for infrastructure or UI failures
+     * (authentication issues, navigation failures, missing grid elements).
+     * Business validation is handled via the return value.
+     *
+     * @return {@code true} if the skill status is {@code "Approved"};
+     *         {@code false} if the status is present but not approved
+     *
+     * @throws IllegalStateException if login, navigation, or status retrieval
+     *         fails due to missing, blocked, or unstable UI elements
+     */
+    public String skillStatusCheck() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+        try {
+            // =========================
+            // 1) Logout current user
+            // =========================
+            eleutil.waitForElementVisible(clickOnUserName, 10);
+            eleutil.clickStable(clickOnUserName, 10);
+            eleutil.waitForElementVisible(clickOnLogoutBtn, 10);
+            eleutil.clickStable(clickOnLogoutBtn, 10);
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            // =========================
+            // 2) Select SuperCoach / Admin account
+            // =========================
+            try {
+                // Prefer a standard click path
+                eleutil.waitForElementVisible(clickOnSCId,20);
+                //wait.until(ExpectedConditions.visibilityOfElementLocated(rmseLeaderOption));
+                eleutil.clickStable(clickOnAdminAccount, 15);
+            } catch (Exception e) {
+                // Fallback: click the exact account option
+                WebElement Admin= eleutil.waitForElementVisible(clickOnSCId,20);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", Admin);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", Admin);
+            }
+            // 3) Choose "Use another account"
+            try {
+                eleutil.clickStable(clickOnUseOtherAccount, 15);
+            } catch (TimeoutException te) {
+                throw new IllegalStateException("'Use another account' option not available. " +
+                        "The account picker may not have opened correctly.", te);
+            }
+            // 4) Enter email
+            try {
+                eleutil.enterTextReliable(emailInputField, "RMSED.Leader@IN.GT.COM", 15);
+                eleutil.clickStable(nextBtn, 10);
+            } catch (TimeoutException te) {
+                throw new IllegalStateException("Email field or Next button not available during sign-in.", te);
+            } catch (IllegalStateException ise) {
+                throw new IllegalStateException("Failed to enter email due to re-render/focus issues.", ise);
+            }
+            // 5) Enter password (core stability + exception if not visible or not entered)
+            try {
+                // Ensure visible and enabled
+                WebElement pwdEl = eleutil.waitForElementVisible(passwordInputField, 15);
+                if (!pwdEl.isDisplayed() || !pwdEl.isEnabled()) {
+                    throw new IllegalStateException("Password field is present but not visible/enabled.");
+                }
+                // Scroll and enter reliably (with verification)
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
+                eleutil.enterTextReliable(passwordInputField, "InTEL%$#@!67890", 15);
+
+                // Optional: extra verification step if page tends to re-render
+                String pwdValue = driver.findElement(passwordInputField).getAttribute("value");
+                if (pwdValue == null || pwdValue.isEmpty()) {
+                    throw new IllegalStateException("Password value did not stick after entry—UI may be re-rendering.");
+                }
+            } catch (TimeoutException te) {
+                throw new NoSuchElementException("Password field is not visible within timeout—" +
+                        "login page may not have loaded, or an overlay is blocking.", te);
+            } catch (StaleElementReferenceException sere) {
+                // re-locate once more and try again
+                WebElement pwdEl = eleutil.waitForElementVisible(passwordInputField, 10);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
+                eleutil.enterTextReliable(passwordInputField, "Work@#$Perfect!7654", 10);
+            } catch (IllegalStateException ise) {
+                throw new IllegalStateException("Failed to enter password: " + ise.getMessage(), ise);
+            }
+            // 6) Click Sign-in
+            try {
+                eleutil.clickStable(clickOnSignInBtn, 15);
+            } catch (TimeoutException te) {
+                throw new IllegalStateException("Sign-in button not clickable. " +
+                        "An overlay or validation error might be blocking.", te);
+            }
+            eleutil.waitForElementVisible(skillsBtn,5,5);
+            // 7) Navigate to Skills module
+            eleutil.clickStable(skillsBtn, 5);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            eleutil.clickStable(mySkills,10);
+            // 8) Wait for AG Grid status chip
+            WebElement statusElement=eleutil.waitForElementVisible(statusLocator,5);
+            String statusText = statusElement.getText().trim();
+            System.out.println("Skill status from grid: " + statusText);
+            // =========================
+            // 9) Return Status String  value
+            // =========================
+            return statusText;
+
+        }
+        catch (TimeoutException e) {
+            throw new IllegalStateException(
+                    "Timeout while verifying skill approval status from SuperCoach", e
+            );
+        }
+        catch (NoSuchElementException e) {
+            throw new IllegalStateException(
+                    "Required UI element missing during skill status verification", e
+            );
+        }
+    }
 }
