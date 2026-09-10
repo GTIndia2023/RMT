@@ -497,6 +497,26 @@ EMAIL_TO
 
 Use a CI-safe test account. Interactive Microsoft Authenticator approval and other MFA challenges cannot be completed reliably in unattended execution.
 
+## GitHub Actions
+
+The workflow at `.github/workflows/rmt-ci.yml` compiles the project on every pull request and push to `master`. It does not run state-changing UAT UI tests automatically.
+
+To enable the manual UAT sanity run, create a GitHub Environment named `uat` and add these environment secrets:
+
+```text
+RMT_URL
+RMT_USERNAME
+RMT_PASSWORD
+RMT_ALLOCATION_SWITCH_USERNAME
+RMT_ALLOCATION_SWITCH_PASSWORD
+DB_URL
+DB_USERNAME
+DB_PASSWORD
+ALLOCATION_VALIDATION_QUERY
+```
+
+Open **Actions**, select **RMT Java CI**, click **Run workflow**, and enable `run_uat_ui_tests`. The run uses Edge in headless mode and uploads Surefire reports, test logs, Allure results, and the CI summary as a downloadable artifact.
+
 ## MCP Integration
 
 The project contains an MCP server in `mcp/`. It gives Codex or Claude project-aware tools for test execution and diagnostics; it does not replace Selenium, TestNG, Maven, or Allure.
