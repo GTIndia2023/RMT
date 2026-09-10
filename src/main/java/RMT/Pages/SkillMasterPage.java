@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SkillMasterPage {
     private WebDriver driver;
@@ -27,6 +29,10 @@ public class SkillMasterPage {
     public SkillMasterPage(WebDriver driver) {
         this.driver = driver;
         eleutil = new ElementUtil(driver);
+    }
+
+    private void logAction(String message) {
+        System.out.println("[SkillMaster] " + message);
     }
 
     //2.Page locators
@@ -75,22 +81,22 @@ public class SkillMasterPage {
     private By skillAddedMessage=By.xpath("//div[@class='MuiAlert-message css-1xsto0d']");
     private By skillsOptions=By.xpath("//li[@aria-selected='false']");
     private By competencyInputChoice= By.xpath("(//li[text()='Forensic'])");
-    private By clickOnUserName= By.cssSelector(".css-odsz1v");
+    private By clickOnUserName= By.xpath("//div[contains(@class,'user-container')]//button[contains(normalize-space(.),'Rmsed') or contains(normalize-space(.),'RMSED')]");
     private By clickOnLogoutBtn = By.cssSelector("#account-menu .MuiButtonBase-root");
-    private By clickOnAccount = By.xpath("//div[text()='RMSED Leader']");
-    private By clickOnSCId = By.xpath("//div[normalize-space()='RMSED Admin']");
-    private By clickOnSignInBtn = By.xpath("//input[@value='Sign in']");
+    private By clickOnAccount = By.xpath("//div[contains(normalize-space(.),'RMSED ResourceReq2')]");
+    private By clickOnSCId = By.xpath("//div[contains(normalize-space(.),'RMSED Admin')]");
+    private By clickOnSignInBtn = By.xpath("//input[@value='Sign in' or @id='idSIButton9']");
     private By skillReviewBtn=By.xpath("//li[text()='Skills Review']");
     private By clickOnCheckbox= By.cssSelector("input.ag-checkbox-input[aria-label*='toggle all rows selection']");
     private By clickOnBulkApproveBtn = By.xpath("//button[text()='Bulk Approve']");
     private By enterRemarks = By.xpath("//label[text()='Remarks']");
     private By clickOnConfirmBtn =By.xpath("//button[text()='Confirm']");
     private By skillApprovedMessage = By.xpath("//div[@class='MuiAlert-message css-1xsto0d']");
-    private By clickOnUseOtherAccount = By.xpath("//div[normalize-space()='Use another account']");
-    private final By emailInputField = By.xpath("//input[@type='email']");
-    private final By nextBtn = By.xpath("//input[@type='submit']");
-    private final By passwordInputField = By.xpath("//input[@type='password']");
-    private final By rmseLeaderOption = By.xpath("//div[normalize-space()='RMSED Leader']");
+    private By clickOnUseOtherAccount = By.xpath("//*[contains(normalize-space(.),'Use another account') or contains(normalize-space(.),'Add another account')]");
+    private final By emailInputField = By.xpath("//input[@type='email' or @name='loginfmt' or @id='i0116']");
+    private final By nextBtn = By.xpath("//input[@type='submit' or @id='idSIButton9' or @value='Next' or @value='Sign in']");
+    private final By passwordInputField = By.xpath("//input[@type='password' or @name='passwd' or @id='i0118']");
+    private final By rmseLeaderOption = By.xpath("//div[contains(normalize-space(.),'RMSED ResourceReq2')]");
     private By clickOnAdminAccount= By.xpath("//div[text()='RMSED Admin']");
     private By statusLocator= By.xpath("//div[contains(@class,'MuiChip-root')]//span[contains(@class,'MuiChip-label')]");
     private By filterInputFiled= By.xpath("(//input[@placeholder='Filter...'])[1]");
@@ -110,7 +116,7 @@ public class SkillMasterPage {
      */
     public String getSkillMasterPageTitle() {
         String title = eleutil.waitForTitleToBe(AppConstants.SKILL_MASTER_PAGE_TITLE, TimeUtil.MEDIUM_TIME_OUT);
-        System.out.println("Skill master Page  title is " + title);
+        logAction("Skill master Page  title is " + title);
         return title;
     }
 
@@ -121,7 +127,7 @@ public class SkillMasterPage {
      */
     public String getSkillMasterPageUrl() {
         String url = eleutil.waitForURLToBe(AppConstants.SKILL_MASTER_PAGE_URL, TimeUtil.DEFAULT_TIME_OUT);
-        System.out.println("Skill master page Url is " + url);
+        logAction("Skill master page Url is " + url);
         return url;
     }
 
@@ -149,7 +155,7 @@ public class SkillMasterPage {
             throw new RuntimeException(e);
         }
         LocalDateTime startOperation = LocalDateTime.now();
-        System.out.println("Start Time for skill filter operation: " + startOperation.format(formatter));
+        logAction("Start Time for skill filter operation: " + startOperation.format(formatter));
         eleutil.clickWhenReady(skillNameFilter, TimeUtil.DEFAULT_TIME_OUT);//Click on Ag grid filter
         eleutil.clickWhenReady(filterIcon, TimeUtil.DEFAULT_TIME_OUT);// Click on Filter icon
         try {
@@ -160,7 +166,7 @@ public class SkillMasterPage {
         eleutil.doSendKeys(this.containsInput, skillname, TimeUtil.DEFAULT_TIME_OUT); // Entering the skill name from the filter/File
         LocalDateTime endOperation = LocalDateTime.now();
         Duration duration = Duration.between(startOperation, endOperation);
-        System.out.println("Time taken for skill filter operation: " + duration.toMinutes() + " min " + duration.toSecondsPart() + " sec");
+        logAction("Time taken for skill filter operation: " + duration.toMinutes() + " min " + duration.toSecondsPart() + " sec");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -168,7 +174,7 @@ public class SkillMasterPage {
         }
         try {
             LocalDateTime editStart = LocalDateTime.now();
-            System.out.println("Start Time for skill edit operation: " + editStart.format(formatter));
+            logAction("Start Time for skill edit operation: " + editStart.format(formatter));
             eleutil.clickWhenReady(editSkill, TimeUtil.DEFAULT_TIME_OUT);//Clicking on edit skill icon
             try {
                 Thread.sleep(2000);
@@ -186,7 +192,7 @@ public class SkillMasterPage {
             //eleutil.doActionsClick(competencyInputChoice);
             LocalDateTime editEnd = LocalDateTime.now();
             Duration editDuration = Duration.between(editStart, editEnd);
-            System.out.println("Time taken for skill edit operation: " + editDuration.toMinutes() + " min " + editDuration.toSecondsPart() + " sec");
+            logAction("Time taken for skill edit operation: " + editDuration.toMinutes() + " min " + editDuration.toSecondsPart() + " sec");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
@@ -194,55 +200,55 @@ public class SkillMasterPage {
             }
             // Capture time for designation mapping
             LocalDateTime designationStart = LocalDateTime.now();
-            System.out.println("Start Time for designation mapping: " + designationStart.format(formatter));
+            logAction("Start Time for designation mapping: " + designationStart.format(formatter));
             jsUtil.zoomFirefoxChromeEdgeSafari("50");
             if (A1_P_GR00001.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_PARTNER);
             } else {
                 LocalDateTime designationEnd = LocalDateTime.now();
                 Duration designationDuration = Duration.between(designationStart, designationEnd);
-                System.out.println("Time taken for designation mapping: " + designationDuration.toMinutes() + " min " + designationDuration.toSecondsPart() + " sec");
-                System.out.println("A1_P_GR00001 column value is No");
+                logAction("Time taken for designation mapping: " + designationDuration.toMinutes() + " min " + designationDuration.toSecondsPart() + " sec");
+                logAction("A1_P_GR00001 column value is No");
             }
             if (A2_ED_GR00002.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Executive_Director);
             } else {
-                System.out.println("A2_ED_GR00002 column value is No");
+                logAction("A2_ED_GR00002 column value is No");
             }
             if (A3_D_GR00003.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Director);
             } else {
-                System.out.println("A3_D_GR00003 Column value is No ");
+                logAction("A3_D_GR00003 Column value is No ");
             }
             if (B1_AD_GR00004.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Associate_Director);
             } else {
-                System.out.println("B1_AD_GR00004 Column value is No ");
+                logAction("B1_AD_GR00004 Column value is No ");
             }
             if (B2_M_GR00005.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_MANAGER);
             } else {
-                System.out.println("B2_M_GR00005 Column value is No ");
+                logAction("B2_M_GR00005 Column value is No ");
             }
             if (C1_AM_GR00006.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Assistant_MANAGER);
             } else {
-                System.out.println("C1_AM_GR00006 Column value is No ");
+                logAction("C1_AM_GR00006 Column value is No ");
             }
             if (C2_SA_GR00007.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_ASSOCIATE);
             } else {
-                System.out.println("C2_SA_GR00007 Column value is No ");
+                logAction("C2_SA_GR00007 Column value is No ");
             }
             if (D1_GT_GR00008.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Graduate_Trainee);
             } else {
-                System.out.println("D1_GT_GR00008 Column value is No ");
+                logAction("D1_GT_GR00008 Column value is No ");
             }
             if (D2_T_GR00009.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Trainee);
             } else {
-                System.out.println("D2_T_GR00009 Column value is No ");
+                logAction("D2_T_GR00009 Column value is No ");
             }
 
             try {
@@ -252,13 +258,13 @@ public class SkillMasterPage {
             }
             String text = eleutil.doGetText(popUpText);
             jsUtil.zoomFirefoxChromeEdgeSafari("50");
-            System.out.println(text);
+            logAction(text);
             eleutil.doActionsClick(popUpText);
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[text()='Save'])")));
             jsUtil.clickElementByJS(driver.findElement(By.xpath("(//button[@type='submit'])[1]")));
             eleutil.clickWhenReady(yesBtn, TimeUtil.DEFAULT_TIME_OUT);
             String successMessage = eleutil.waitForElementVisible(successMsg, TimeUtil.MEDIUM_TIME_OUT).getText();
-            System.out.println("Skill updated  " + successMessage);
+            logAction("Skill updated  " + successMessage);
             if (successMessage.equalsIgnoreCase(AppConstants.SKILL_MASTER_SKILL_UPDATION_SUCCESS_MESSAGE)) {
                 return true;
             } else {
@@ -267,12 +273,12 @@ public class SkillMasterPage {
         } catch (TimeoutException e) {
             // Capture start time for skill addition
             LocalDateTime startSkillAddition = LocalDateTime.now();
-            System.out.println("Start Time for skill addition: " + startSkillAddition.format(formatter));
+            logAction("Start Time for skill addition: " + startSkillAddition.format(formatter));
             eleutil.doClick(addNewSkillBtn, TimeUtil.DEFAULT_TIME_OUT);// Click on AdNewSkill button
             eleutil.doSendKeys(skillName1, skillname, TimeUtil.DEFAULT_TIME_OUT);// Inputing the skill name
             LocalDateTime endSkillAddition = LocalDateTime.now();
             Duration durationSkillAddition = Duration.between(startSkillAddition, endSkillAddition);
-            System.out.println("Time taken for skill addition: " + durationSkillAddition.toMinutes() + " min " + durationSkillAddition.toSecondsPart() + " sec");
+            logAction("Time taken for skill addition: " + durationSkillAddition.toMinutes() + " min " + durationSkillAddition.toSecondsPart() + " sec");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException f) {
@@ -280,7 +286,7 @@ public class SkillMasterPage {
             }
             // Capture start time for entering skill details
             LocalDateTime startDetails = LocalDateTime.now();
-            System.out.println("Start Time for entering skill details: " + startDetails.format(formatter));
+            logAction("Start Time for entering skill details: " + startDetails.format(formatter));
             try {
                 eleutil.handleDropdownMenue(skillCategory, Category);
             } catch (RuntimeException | InterruptedException ex) {
@@ -293,7 +299,7 @@ public class SkillMasterPage {
             eleutil.doSendKeys(this.excelledInput, excelled, TimeUtil.DEFAULT_TIME_OUT);
             LocalDateTime endDetails = LocalDateTime.now();
             Duration durationDetails = Duration.between(startDetails, endDetails);
-            System.out.println("Time taken for entering skill details: " + durationDetails.toMinutes() + " min " + durationDetails.toSecondsPart() + " sec");
+            logAction("Time taken for entering skill details: " + durationDetails.toMinutes() + " min " + durationDetails.toSecondsPart() + " sec");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
@@ -301,12 +307,12 @@ public class SkillMasterPage {
             }
             //Capture start time for competency selection
             LocalDateTime startCompetency = LocalDateTime.now();
-            System.out.println("Start Time for competency selection: " + startCompetency.format(formatter));
+            logAction("Start Time for competency selection: " + startCompetency.format(formatter));
             jsUtil.clickElementByJS(driver.findElement(By.xpath("//a[@href='#']")));
             eleutil.handleCompetencyMenue(CompetencyInput, competency);//Clicking on copetency field and selecting the value from Excel
             LocalDateTime endCompetency = LocalDateTime.now();
             Duration durationCompetency = Duration.between(startCompetency, endCompetency);
-            System.out.println("Time taken for competency selection: " + durationCompetency.toMinutes() + " min " + durationCompetency.toSecondsPart() + " sec");
+            logAction("Time taken for competency selection: " + durationCompetency.toMinutes() + " min " + durationCompetency.toSecondsPart() + " sec");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
@@ -314,56 +320,56 @@ public class SkillMasterPage {
             }
             // Capture start time for designation selection
             LocalDateTime startDesignation = LocalDateTime.now();
-            System.out.println("Start Time for designation selection: " + startDesignation.format(formatter));
+            logAction("Start Time for designation selection: " + startDesignation.format(formatter));
             jsUtil.zoomFirefoxChromeEdgeSafari("60");
             if (A1_P_GR00001.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_PARTNER);
             } else {
-                System.out.println("A1_P_GR00001 column value is No");
+                logAction("A1_P_GR00001 column value is No");
             }
             if (A2_ED_GR00002.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Executive_Director);
             } else {
-                System.out.println("A2_ED_GR00002 column value is No");
+                logAction("A2_ED_GR00002 column value is No");
             }
             if (A3_D_GR00003.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Director);
             } else {
-                System.out.println("A3_D_GR00003 Column value is No ");
+                logAction("A3_D_GR00003 Column value is No ");
             }
             if (B1_AD_GR00004.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Associate_Director);
             } else {
-                System.out.println("B1_AD_GR00004 Column value is No ");
+                logAction("B1_AD_GR00004 Column value is No ");
             }
             if (B2_M_GR00005.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_MANAGER);
             } else {
-                System.out.println("B2_M_GR00005 Column value is No ");
+                logAction("B2_M_GR00005 Column value is No ");
             }
             if (C1_AM_GR00006.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Assistant_MANAGER);
             } else {
-                System.out.println("C1_AM_GR00006 Column value is No ");
+                logAction("C1_AM_GR00006 Column value is No ");
             }
             if (C2_SA_GR00007.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_ASSOCIATE);
             } else {
-                System.out.println("C2_SA_GR00007 Column value is No ");
+                logAction("C2_SA_GR00007 Column value is No ");
             }
             if (D1_GT_GR00008.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Graduate_Trainee);
             } else {
-                System.out.println("D1_GT_GR00008 Column value is No ");
+                logAction("D1_GT_GR00008 Column value is No ");
             }
             if (D2_T_GR00009.equals("Yes")) {
                 eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Trainee);
             } else {
-                System.out.println("D2_T_GR00009 Column value is No ");
+                logAction("D2_T_GR00009 Column value is No ");
             }
             LocalDateTime endDesignation = LocalDateTime.now();
             Duration durationDesignation = Duration.between(startDesignation, endDesignation);
-            System.out.println("Time taken for designation selection: " + durationDesignation.toMinutes() + " min " + durationDesignation.toSecondsPart() + " sec");
+            logAction("Time taken for designation selection: " + durationDesignation.toMinutes() + " min " + durationDesignation.toSecondsPart() + " sec");
 
             try {
                 Thread.sleep(1000);
@@ -372,7 +378,7 @@ public class SkillMasterPage {
             }
             String text = eleutil.doGetText(popUpText);
             jsUtil.zoomFirefoxChromeEdgeSafari("60");
-            System.out.println(text);
+            logAction(text);
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
@@ -393,7 +399,7 @@ public class SkillMasterPage {
             }
             eleutil.clickWhenReady(yesBtn, TimeUtil.DEFAULT_TIME_OUT);
             String successMessage = eleutil.waitForElementVisible(successMsg, TimeUtil.MEDIUM_TIME_OUT).getText();
-            System.out.println("Skill added and tagged successfully " + successMessage);
+            logAction("Skill added and tagged successfully " + successMessage);
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
@@ -453,17 +459,17 @@ public class SkillMasterPage {
                 try {
                     WebElement editBtn = eleutil.waitForElementVisible(editCompetencyBtn, 5);
                     if (editBtn != null) {
-                        System.out.println("This skill is tagged to a competency");
+                        logAction("This skill is tagged to a competency");
                         Thread.sleep(1000);
                         jsUtil.clickElementByJS(driver.findElement(By.xpath("(// button[@type='button'])[7]")));// Click back button
                         return true;  // Exit method since skill is already tagged
                     }
                 } catch (NoSuchElementException | TimeoutException e) {
-                    System.out.println("Edit competency button not found: " + e.getMessage());
+                    logAction("Edit competency button not found: " + e.getMessage());
                 }
 
             } catch (TimeoutException e) {
-                System.out.println("Skill competency not found, retrying...");
+                logAction("Skill competency not found, retrying...");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -472,7 +478,7 @@ public class SkillMasterPage {
         }
 
 // If competency is still not found after retries, proceed to add a new skill
-        System.out.println("Competency not found after retries. Proceeding to add skill...");
+        logAction("Competency not found after retries. Proceeding to add skill...");
 
         // If the competency was not found, proceed to add the skill
         eleutil.doClick(addNewSkillBtn, TimeUtil.DEFAULT_TIME_OUT);// Click on AdNewSkill button
@@ -508,47 +514,47 @@ public class SkillMasterPage {
         if (A1_P_GR00001.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_PARTNER);
         } else {
-            System.out.println("A1_P_GR00001 column value is No");
+            logAction("A1_P_GR00001 column value is No");
         }
         if (A2_ED_GR00002.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Executive_Director);
         } else {
-            System.out.println("A2_ED_GR00002 column value is No");
+            logAction("A2_ED_GR00002 column value is No");
         }
         if (A3_D_GR00003.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Director);
         } else {
-            System.out.println("A3_D_GR00003 Column value is No ");
+            logAction("A3_D_GR00003 Column value is No ");
         }
         if (B1_AD_GR00004.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Associate_Director);
         } else {
-            System.out.println("B1_AD_GR00004 Column value is No ");
+            logAction("B1_AD_GR00004 Column value is No ");
         }
         if (B2_M_GR00005.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_MANAGER);
         } else {
-            System.out.println("B2_M_GR00005 Column value is No ");
+            logAction("B2_M_GR00005 Column value is No ");
         }
         if (C1_AM_GR00006.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Assistant_MANAGER);
         } else {
-            System.out.println("C1_AM_GR00006 Column value is No ");
+            logAction("C1_AM_GR00006 Column value is No ");
         }
         if (C2_SA_GR00007.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_ASSOCIATE);
         } else {
-            System.out.println("C2_SA_GR00007 Column value is No ");
+            logAction("C2_SA_GR00007 Column value is No ");
         }
         if (D1_GT_GR00008.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Graduate_Trainee);
         } else {
-            System.out.println("D1_GT_GR00008 Column value is No ");
+            logAction("D1_GT_GR00008 Column value is No ");
         }
         if (D2_T_GR00009.equals("Yes")) {
             eleutil.handleDesignationMenue1(DesignationInput, AppConstants.DESIGNATION_MASTER_GRADE_Trainee);
         } else {
-            System.out.println("D2_T_GR00009 Column value is No ");
+            logAction("D2_T_GR00009 Column value is No ");
         }
 
         try {
@@ -558,7 +564,7 @@ public class SkillMasterPage {
         }
         String text = eleutil.doGetText(popUpText);
         jsUtil.zoomFirefoxChromeEdgeSafari("67");
-        System.out.println(text);
+        logAction(text);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {
@@ -574,7 +580,7 @@ public class SkillMasterPage {
         }
         eleutil.clickWhenReady(yesBtn, TimeUtil.DEFAULT_TIME_OUT);
         String successMessage = eleutil.waitForElementVisible(successMsg, TimeUtil.MEDIUM_TIME_OUT).getText();
-        System.out.println("Skill added and tagged successfully " + successMessage);
+        logAction("Skill added and tagged successfully " + successMessage);
         try {
             Thread.sleep(3000);
         } catch (InterruptedException ex) {
@@ -616,7 +622,7 @@ public class SkillMasterPage {
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
         String resultSkillName = eleutil.waitForElementVisible(searchedResult, TimeUtil.MEDIUM_TIME_OUT).getText();
-        System.out.println("Searched result includes " + resultSkillName);
+        logAction("Searched result includes " + resultSkillName);
         if (resultSkillName.equalsIgnoreCase(AppConstants.SEARCHED_SKILL_RESULT)) {
             return true;
         } else {
@@ -648,7 +654,7 @@ public class SkillMasterPage {
         act.sendKeys(Keys.ARROW_DOWN).perform();
         act.sendKeys(Keys.ENTER).perform();
         String resultSkillName = eleutil.waitForElementVisible(employeeDsgn, TimeUtil.MEDIUM_TIME_OUT).getText().trim();
-        System.out.println("Searched result includes " + resultSkillName);
+        logAction("Searched result includes " + resultSkillName);
         if (resultSkillName.equalsIgnoreCase(AppConstants.EMPLOYEE_SKILL_DESIGNATION)) {
             return true;
         } else {
@@ -729,7 +735,7 @@ public class SkillMasterPage {
                     .pause(Duration.ofMillis(200))
                     .click()
                     .perform();
-            System.out.println("✅ Selected skill: " + chosenSkill);
+            logAction("✅ Selected skill: " + chosenSkill);
 
             // 6) Handle proficiency selection (caller will implement details)
             eleutil.doActionsClick(proficiency);
@@ -748,7 +754,7 @@ public class SkillMasterPage {
                     skillAddedMessage, TimeUtil.MEDIUM_TIME_OUT
             );
             String successMessage = successElement.getText().trim();
-            System.out.println("Skill added: " + successMessage);
+            logAction("Skill added: " + successMessage);
             if (!successMessage.equalsIgnoreCase(
                     AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE)) {
 
@@ -820,7 +826,7 @@ public class SkillMasterPage {
         }
         // 4) Enter email
         try {
-            eleutil.enterTextReliable(emailInputField, "RMSED.Admin@in.gt.com", 15);
+            eleutil.enterTextReliable(emailInputField, requiredRuntimeCredential("supercoach.username", "RMT_SUPERCOACH_USERNAME"), 15);
             eleutil.clickStable(nextBtn, 10);
         } catch (TimeoutException te) {
             throw new IllegalStateException("Email field or Next button not available during sign-in.", te);
@@ -836,7 +842,7 @@ public class SkillMasterPage {
             }
             // Scroll and enter reliably (with verification)
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
-            eleutil.enterTextReliable(passwordInputField, "Work@#$Perfect!7654", 15);
+            eleutil.enterTextReliable(passwordInputField, requiredRuntimeCredential("supercoach.password", "RMT_SUPERCOACH_PASSWORD"), 15);
 
             // Optional: extra verification step if page tends to re-render
             String pwdValue = driver.findElement(passwordInputField).getAttribute("value");
@@ -850,7 +856,7 @@ public class SkillMasterPage {
             // re-locate once more and try again
             WebElement pwdEl = eleutil.waitForElementVisible(passwordInputField, 10);
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
-            eleutil.enterTextReliable(passwordInputField, "Work@#$Perfect!7654", 10);
+            eleutil.enterTextReliable(passwordInputField, requiredRuntimeCredential("supercoach.password", "RMT_SUPERCOACH_PASSWORD"), 10);
         } catch (IllegalStateException ise) {
             throw new IllegalStateException("Failed to enter password: " + ise.getMessage(), ise);
         }
@@ -944,9 +950,81 @@ public class SkillMasterPage {
                 skillApprovedMessage, TimeUtil.LONG_TIME_OUT
         );
         String successMessage = successElement.getText().trim();
-        System.out.println("Skill updated: " + successMessage);
+        logAction("Skill updated: " + successMessage);
 
         return successMessage;
+    }
+
+    /**
+     * Logs out the current user, selects an account from the Microsoft account picker,
+     * clicks "Use another account", signs in with provided credentials, clicks "Yes"
+     * on stay-signed-in prompt when shown, and returns to Project Listings context.
+     *
+     * @param accountPickerLabel account tile label shown on account picker (e.g. RMSED.ResourceReq2)
+     * @param email login email to enter after clicking "Use another account"
+     * @param password login password
+     * @return ProjectListingsPage object after successful sign-in
+     */
+    public ProjectListingsPage switchAccountUsingExistingFlow(String accountPickerLabel, String email, String password) {
+        List<By> accountCandidates = buildMicrosoftAccountCandidates(accountPickerLabel == null ? "" : accountPickerLabel.trim());
+        By useAnotherAccountTile = By.xpath("//*[contains(normalize-space(.),'Use another account') or contains(normalize-space(.),'Add another account')]/ancestor::*[self::button or self::li or self::div[@role='button'] or self::div[@role='option']][1]");
+        By[] staySignedInCandidates = {
+                By.xpath("//input[@value='Yes' or @id='idSIButton9']"),
+                By.xpath("//button[normalize-space()='Yes']")
+        };
+        By[] accountMenuCandidates = {
+                clickOnUserName,
+                By.xpath("//div[contains(@class,'user-container')]//button"),
+                By.xpath("//button[contains(@aria-label,'account')]"),
+                By.xpath("//*[contains(@class,'user-container')]//*[self::button or self::div[@role='button']][contains(normalize-space(.),'Resourcereq') or contains(normalize-space(.),'RMSED')]")
+        };
+        By[] logoutCandidates = {
+                By.xpath("//li[normalize-space()='Logout']"),
+                By.xpath("//li[normalize-space()='Log Out']"),
+                By.xpath("//li[normalize-space()='Sign out']"),
+                By.xpath("//button[normalize-space()='Logout']"),
+                By.xpath("//button[normalize-space()='Log Out']"),
+                By.xpath("//span[normalize-space()='Logout']/ancestor::*[self::li or self::button][1]"),
+                clickOnLogoutBtn
+        };
+        eleutil.logoutAndLoginWithMicrosoftAccount(
+                accountMenuCandidates,
+                logoutCandidates,
+                accountCandidates.toArray(new By[0]),
+                new By[]{useAnotherAccountTile, clickOnUseOtherAccount},
+                new By[]{emailInputField},
+                nextBtn,
+                new By[]{passwordInputField},
+                clickOnSignInBtn,
+                staySignedInCandidates,
+                email,
+                password
+        );
+        eleutil.waitForAppLanding();
+        return new ProjectListingsPage(driver);
+    }
+
+    private List<By> buildMicrosoftAccountCandidates(String normalizedAccountLabel) {
+        List<By> accountCandidates = new ArrayList<>();
+        if (!normalizedAccountLabel.isEmpty()) {
+            String spaceVariant = normalizedAccountLabel.replace('.', ' ');
+            accountCandidates.add(By.xpath("//*[contains(normalize-space(.),'" + normalizedAccountLabel + "')]/ancestor::*[self::button or self::li or self::div[@role='button'] or self::div[@role='option']][1]"));
+            accountCandidates.add(By.xpath("//*[contains(normalize-space(.),'" + spaceVariant + "')]/ancestor::*[self::button or self::li or self::div[@role='button'] or self::div[@role='option']][1]"));
+            accountCandidates.add(By.xpath("//*[contains(normalize-space(.),'" + normalizedAccountLabel + "')]"));
+            accountCandidates.add(By.xpath("//*[contains(normalize-space(.),'" + spaceVariant + "')]"));
+            if (normalizedAccountLabel.contains("@")) {
+                String localPart = normalizedAccountLabel.substring(0, normalizedAccountLabel.indexOf('@')).trim();
+                if (!localPart.isEmpty()) {
+                    String localVariant = localPart.replace('.', ' ');
+                    accountCandidates.add(By.xpath("//*[contains(normalize-space(.),'" + localVariant + "')]/ancestor::*[self::button or self::li or self::div[@role='button'] or self::div[@role='option']][1]"));
+                    accountCandidates.add(By.xpath("//*[contains(normalize-space(.),'" + localVariant + "')]"));
+                }
+            }
+        }
+        accountCandidates.add(rmseLeaderOption);
+        accountCandidates.add(clickOnAccount);
+        accountCandidates.add(clickOnSCId);
+        return accountCandidates;
     }
 
     /**
@@ -1009,7 +1087,7 @@ public class SkillMasterPage {
             }
             // 4) Enter email
             try {
-                eleutil.enterTextReliable(emailInputField, "RMSED.Leader@IN.GT.COM", 15);
+                eleutil.enterTextReliable(emailInputField, requiredRuntimeCredential("supercoach.username", "RMT_SUPERCOACH_USERNAME"), 15);
                 eleutil.clickStable(nextBtn, 10);
             } catch (TimeoutException te) {
                 throw new IllegalStateException("Email field or Next button not available during sign-in.", te);
@@ -1025,7 +1103,7 @@ public class SkillMasterPage {
                 }
                 // Scroll and enter reliably (with verification)
                 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
-                eleutil.enterTextReliable(passwordInputField, "InTEL%$#@!67890", 15);
+                eleutil.enterTextReliable(passwordInputField, requiredRuntimeCredential("supercoach.password", "RMT_SUPERCOACH_PASSWORD"), 15);
 
                 // Optional: extra verification step if page tends to re-render
                 String pwdValue = driver.findElement(passwordInputField).getAttribute("value");
@@ -1039,7 +1117,7 @@ public class SkillMasterPage {
                 // re-locate once more and try again
                 WebElement pwdEl = eleutil.waitForElementVisible(passwordInputField, 10);
                 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
-                eleutil.enterTextReliable(passwordInputField, "Work@#$Perfect!7654", 10);
+                eleutil.enterTextReliable(passwordInputField, requiredRuntimeCredential("supercoach.password", "RMT_SUPERCOACH_PASSWORD"), 10);
             } catch (IllegalStateException ise) {
                 throw new IllegalStateException("Failed to enter password: " + ise.getMessage(), ise);
             }
@@ -1062,7 +1140,7 @@ public class SkillMasterPage {
             // 8) Wait for AG Grid status chip
             WebElement statusElement=eleutil.waitForElementVisible(statusLocator,5);
             String statusText = statusElement.getText().trim();
-            System.out.println("Skill status from grid: " + statusText);
+            logAction("Skill status from grid: " + statusText);
             // =========================
             // 9) Return Status String  value
             // =========================
@@ -1079,5 +1157,21 @@ public class SkillMasterPage {
                     "Required UI element missing during skill status verification", e
             );
         }
+    }
+
+    /**
+     * Reads credentials used only by legacy SuperCoach helpers from a Maven property or environment variable.
+     * Keeping the values outside source control prevents test-account credentials from entering Git history.
+     */
+    private String requiredRuntimeCredential(String systemPropertyKey, String environmentVariableKey) {
+        String value = System.getProperty(systemPropertyKey);
+        if (value == null || value.trim().isEmpty()) {
+            value = System.getenv(environmentVariableKey);
+        }
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalStateException("Missing runtime credential. Provide -D" + systemPropertyKey
+                    + " or environment variable " + environmentVariableKey + ".");
+        }
+        return value.trim();
     }
 }

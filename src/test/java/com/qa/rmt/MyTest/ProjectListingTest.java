@@ -28,7 +28,7 @@ public class ProjectListingTest extends BaseTest {
     @Test(priority = 3)
     public void updateAllocationProjectListingsTest(){
         String actualStatus=projectPage.updateAllocationFromProjectListingPage();
-        Assert.assertEquals(actualStatus,AppConstants.UPDATED_ALOCATION_STATUS,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
+        Assert.assertEquals(actualStatus,AppConstants.ALLOCATION_APPROVED_MESSAGE,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
     }
     @Test(priority = 4)
     public void releaseAllocationTest(){
@@ -38,7 +38,7 @@ public class ProjectListingTest extends BaseTest {
     @Test(priority = 5)
     public void updateAllocationGridTest(){
         String actualStatus=projectPage.updateAllocationFromGridPage();
-        Assert.assertEquals(actualStatus,AppConstants.UPDATED_ALOCATION_STATUS,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
+        Assert.assertEquals(actualStatus,AppConstants.ALLOCATION_APPROVED_MESSAGE,AppError.REVIEWER_APPROVAL_FLOW_IS_ENABLED);
     }
 
     @Test(priority = 6)

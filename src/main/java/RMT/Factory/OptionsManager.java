@@ -32,11 +32,21 @@ public class OptionsManager {
     public ChromeOptions getChromeOptions() {
         co = new ChromeOptions();
 
-        if (Boolean.parseBoolean(prop.getProperty("headless"))) {//headless is the key of which value will be fetch from config file.
+        if (Boolean.parseBoolean(prop.getProperty("headless"))) {
             System.out.println("====Running tests in headless======");
-            co.addArguments("--headless");
 
+            // 🔥 Use new headless mode (important for Chrome 109+)
+            co.addArguments("--headless=new");
+
+            // 🔥 REQUIRED for Linux CI
+            co.addArguments("--no-sandbox");
+            co.addArguments("--disable-dev-shm-usage");
+
+            // 🔥 Prevent resolution/rendering issues
+            co.addArguments("--disable-gpu");
+            co.addArguments("--window-size=1920,1080");
         }
+
         if (Boolean.parseBoolean(prop.getProperty("incognito"))) {
             co.addArguments("--incognito");
         }
@@ -51,6 +61,7 @@ public class OptionsManager {
             selenoidOptions.put("name", prop.getProperty("testname"));
             co.setCapability("selenoid:options", selenoidOptions);
         }
+
         return co;
     }
 
@@ -100,19 +111,25 @@ public class OptionsManager {
      * @return the configured EdgeOptions
      */
     public EdgeOptions getEdgeOptions() {
-        eo = new EdgeOptions();
+        EdgeOptions eo = new EdgeOptions();
 
         if (Boolean.parseBoolean(prop.getProperty("headless"))) {
             System.out.println("====Running tests in headless======");
-            eo.addArguments("--headless");
+
+            eo.addArguments("--headless=new");      // VERY IMPORTANT
+            eo.addArguments("--window-size=1920,1080");
+            eo.addArguments("--start-maximized");
+            eo.addArguments("--disable-gpu");
+            eo.addArguments("--no-sandbox");
+            eo.addArguments("--disable-dev-shm-usage");
         }
+
         if (Boolean.parseBoolean(prop.getProperty("incognito"))) {
             eo.addArguments("--inPrivate");
         }
 
         if (Boolean.parseBoolean(prop.getProperty("remote"))) {
             eo.setCapability("browserName", "edge");
-            // eo.setCapability("enableVNC", true);
         }
 
         return eo;

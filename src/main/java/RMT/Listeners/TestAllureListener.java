@@ -1,6 +1,5 @@
 package RMT.Listeners;
 import io.qameta.allure.Allure;
-import io.qameta.allure.Attachment;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -8,31 +7,31 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import RMT.Factory.DriverManager;
-
-
+import java.nio.charset.StandardCharsets;
 public class TestAllureListener implements ITestListener {
+
+    private static final String ALLURE_TEST_UUID_ATTRIBUTE = "ALLURE_TEST_UUID";
 
     private static String getTestMethodName(ITestResult iTestResult) {
         return iTestResult.getMethod().getConstructorOrMethod().getName();
     }
 
 
-    // Text attachments for Allure
-    @Attachment(value = "Page screenshot", type = "image/png")
-    public byte[] saveScreenshotPNG(WebDriver driver) {
-        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+    private void attachScreenshot(WebDriver driver, String attachmentName) {
+        byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+        Allure.getLifecycle().addAttachment(attachmentName, "image/png", ".png", screenshot);
     }
 
-    // Text attachments for Allure
-    @Attachment(value = "{0}", type = "text/plain")
-    public static String saveTextLog(String message) {
-        return message;
+    private void attachTextLog(String attachmentName, String message) {
+        String safeMessage = message == null ? "" : message;
+        Allure.getLifecycle().addAttachment(attachmentName, "text/plain", ".txt",
+                safeMessage.getBytes(StandardCharsets.UTF_8));
     }
 
-    // HTML attachments for Allure
-    @Attachment(value = "{0}", type = "text/html")
-    public static String attachHtml(String html) {
-        return html;
+    private void attachPageSource(String attachmentName, String html) {
+        String safeHtml = html == null ? "" : html;
+        Allure.getLifecycle().addAttachment(attachmentName, "text/html", ".html",
+                safeHtml.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
@@ -49,6 +48,21 @@ public class TestAllureListener implements ITestListener {
     @Override
     public void onTestStart(ITestResult iTestResult) {
         System.out.println("I am in onTestStart method " + getTestMethodName(iTestResult) + " start");
+        System.out.println("I am in onTestStart method " + getTestMethodName(iTestResult) + " start");
+        String className = iTestResult.getTestClass().getName();
+        String methodName = iTestResult.getMethod().getMethodName();
+
+        String uniqueId = className + "." + methodName;
+
+        Allure.getLifecycle().updateTestCase(tc -> {
+            tc.setHistoryId(uniqueId);     // for trend
+            tc.setTestCaseId(uniqueId);   // REQUIRED for Allure v3 history
+        });
+
+        Allure.getLifecycle().getCurrentTestCase()
+                .ifPresent(uuid -> iTestResult.setAttribute(ALLURE_TEST_UUID_ATTRIBUTE, uuid));
+
+        System.out.println("History + TestCaseId set for: " + uniqueId);
     }
 
     @Override
@@ -59,15 +73,23 @@ public class TestAllureListener implements ITestListener {
     @Override
     public void onTestFailure(ITestResult iTestResult) {
         System.out.println("I am in onTestFailure method " + getTestMethodName(iTestResult) + " failed");
-        Object testClass = iTestResult.getInstance();
-//        WebDriver driver = BasePage.getDriver();
-//         Allure ScreenShotRobot and SaveTestLog
-        if (DriverManager.getDriver() instanceof WebDriver) {
-            System.out.println("Screenshot captured for test case:" + getTestMethodName(iTestResult));
-            saveScreenshotPNG(DriverManager.getDriver());
+        Allure.getLifecycle().getCurrentTestCase()
+                .ifPresent(uuid -> iTestResult.setAttribute(ALLURE_TEST_UUID_ATTRIBUTE, uuid));
+        WebDriver driver = DriverManager.getDriver();
+        if (driver != null) {
+            try {
+                attachScreenshot(driver, "Failure screenshot - " + getTestMethodName(iTestResult));
+            } catch (Exception e) {
+                attachTextLog("Screenshot capture issue - " + getTestMethodName(iTestResult), e.getMessage());
+            }
+            try {
+                attachPageSource("Failure page source - " + getTestMethodName(iTestResult), driver.getPageSource());
+            } catch (Exception e) {
+                attachTextLog("Page source capture issue - " + getTestMethodName(iTestResult), e.getMessage());
+            }
+        } else {
+            attachTextLog("Failure artifact issue - " + getTestMethodName(iTestResult), "No active driver available.");
         }
-        // Save a log on allure.
-        saveTextLog(getTestMethodName(iTestResult) + " failed and screenshot taken!");
     }
 
     @Override

@@ -1,0 +1,62 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  MAVEN_OPTS: '-Xmx1024m'
+  TEST_EXIT_CODE: '0'
+
+steps:
+
+  - task: UseJavaVersion@1
+    inputs:
+      versionSpec: '21'
+      architecture: 'x64'
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+
+  - powershell: |
+      mvn clean test -Denv=uat -Dbrowser=edge -Dheadless=true
+      $exitCode = $LASTEXITCODE
+      Write-Host "##vso[task.setvariable variable=TEST_EXIT_CODE]$exitCode"
+      if ($exitCode -ne 0) {
+        Write-Host "Tests failed with exit code $exitCode. Continuing so CI artifacts can still be published."
+      }
+    displayName: 'Run Maven tests'
+    continueOnError: true
+
+  - powershell: |
+      python ci/generate_ci_summary.py
+    displayName: 'Generate CI summary'
+    condition: succeededOrFailed()
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'artifacts/ci'
+      artifactName: 'ci-summary'
+      publishLocation: 'Container'
+    condition: succeededOrFailed()
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'target/surefire-reports'
+      artifactName: 'surefire-reports'
+      publishLocation: 'Container'
+    condition: succeededOrFailed()
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'test_Logs'
+      artifactName: 'test-logs'
+      publishLocation: 'Container'
+    condition: succeededOrFailed()
+
+  - powershell: |
+      if ("$(TEST_EXIT_CODE)" -ne "0") {
+        throw "Maven test execution failed with exit code $(TEST_EXIT_CODE)."
+      }
+    displayName: 'Fail pipeline when tests fail'
