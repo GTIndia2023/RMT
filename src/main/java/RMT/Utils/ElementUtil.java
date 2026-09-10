@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,6 +26,55 @@ public class ElementUtil {
 
     public ElementUtil(WebDriver driver) {
         this.driver = driver;
+    }
+
+    private void logAction(String message) {
+        System.out.println("[ElementUtil] " + message);
+    }
+
+    private String describeLocator(By locator) {
+        return locator == null ? "<null locator>" : locator.toString();
+    }
+
+    private boolean isSensitiveLocator(By locator) {
+        if (locator == null) {
+            return false;
+        }
+        String normalized = locator.toString().toLowerCase(Locale.ENGLISH);
+        return normalized.contains("password")
+                || normalized.contains("passwd")
+                || normalized.contains("secret")
+                || normalized.contains("token");
+    }
+
+    private String formatValueForLog(By locator, String value) {
+        if (value == null) {
+            return "<null>";
+        }
+        String normalized = value.replaceAll("\\s+", " ").trim();
+        if (normalized.isEmpty()) {
+            return "<empty>";
+        }
+        if (isSensitiveLocator(locator)) {
+            return "<masked len=" + normalized.length() + ">";
+        }
+        if (normalized.length() > 80) {
+            return normalized.substring(0, 80) + "... (len=" + normalized.length() + ")";
+        }
+        return normalized;
+    }
+
+    private String joinCharSequenceValue(CharSequence... value) {
+        if (value == null || value.length == 0) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (CharSequence seq : value) {
+            if (seq != null) {
+                builder.append(seq);
+            }
+        }
+        return builder.toString();
     }
 
     private void nullCheck(String value) {
@@ -40,17 +90,21 @@ public class ElementUtil {
      */
     public void doSendKeys(By locator, String value) {
         nullCheck(value);
+        logAction("Typing into " + describeLocator(locator) + " value=" + formatValueForLog(locator, value));
         getElement(locator).clear();
         getElement(locator).sendKeys(value);
     }
     @Step("Entering the value using  locator: {0} with value : {1} and waiting for element with timeout : {2}sec ")
     public void doSendKeys(By locator, String value, int timeOut) {
         nullCheck(value);
+        logAction("Typing into " + describeLocator(locator) + " value=" + formatValueForLog(locator, value)
+                + " timeout=" + timeOut + "s");
         waitForElementVisible(locator, timeOut).clear();
         waitForElementVisible(locator, timeOut).sendKeys(value);
     }
 
     public void doSendKeys(By locator, CharSequence... value) {
+        logAction("Typing into " + describeLocator(locator) + " value=" + formatValueForLog(locator, joinCharSequenceValue(value)));
         getElement(locator).clear();
         getElement(locator).sendKeys(value);
     }
@@ -67,10 +121,12 @@ public class ElementUtil {
     }
 
     public void doClick(By locator) {
+        logAction("Clicking " + describeLocator(locator));
         getElement(locator).click();
     }
     @Step("Clicking on the element using the locator: {0}")
     public void doClick(By locator, int timeOut) {
+        logAction("Clicking " + describeLocator(locator) + " timeout=" + timeOut + "s");
         waitForElementVisible(locator, timeOut).click();
     }
 
@@ -114,6 +170,15 @@ public class ElementUtil {
         } else {
             System.out.println(
                     "multiple or zero elements are displayed: " + locator + " with the occurrence of " + elementCount);
+            return false;
+        }
+    }
+    public boolean isElementVisible(By locator, int timeout) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeout));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            return true;
+        } catch (TimeoutException e) {
             return false;
         }
     }
@@ -243,6 +308,7 @@ public class ElementUtil {
      */
     public void handleParentSubMenu(By parentLocator, By childLocator){
         Actions act = new Actions(driver);
+        logAction("Hovering " + describeLocator(parentLocator) + " then clicking " + describeLocator(childLocator));
         act.moveToElement(getElement(parentLocator)).perform();
         try {
             Thread.sleep(2000);
@@ -263,11 +329,13 @@ public class ElementUtil {
     public void handleParentSubMenuWithClick(By parentLocator, By childLocator) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
+            logAction("Clicking parent menu " + describeLocator(parentLocator));
             // Click on the parent menu item
             WebElement parentElement = wait.until(ExpectedConditions.elementToBeClickable(parentLocator));
             parentElement.click();
             System.out.println("Clicked on parent menu item.");
 
+            logAction("Clicking child menu " + describeLocator(childLocator));
             // Click on the child menu item
             WebElement childElement = wait.until(ExpectedConditions.elementToBeClickable(childLocator));
             childElement.click();
@@ -287,6 +355,7 @@ public class ElementUtil {
      */
     public void handleDropdownMenue(By parentLocator, String Category) throws InterruptedException {
         Actions act = new Actions(driver);
+        logAction("Opening dropdown " + describeLocator(parentLocator) + " and selecting category=" + Category);
         doClick(parentLocator);// Clcking on dropdown
         Thread.sleep(2000);
         act.sendKeys(Category).perform();
@@ -301,6 +370,7 @@ public class ElementUtil {
      */
     public void handleCompetencyMenue(By parentLocator, String competency ) {
         Actions act = new Actions(driver);
+        logAction("Opening competency dropdown " + describeLocator(parentLocator) + " and selecting competency=" + competency);
         //By competencyChoice = By.xpath("(//li[text()='Business Process Solution'])");
         doClick(parentLocator);// Clicking on competency dropdown
         try {
@@ -374,6 +444,7 @@ public class ElementUtil {
 
     public void doActionsClick(By locator) {
         Actions act = new Actions(driver);
+        logAction("Actions-click on " + describeLocator(locator));
         act.click(getElement(locator)).perform();
     }
 
@@ -386,6 +457,8 @@ public class ElementUtil {
      */
     public void doActionsSendKeysWithPause(By locator, String value, long pauseTime) {
         Actions act = new Actions(driver);
+        logAction("Actions-typing into " + describeLocator(locator) + " value=" + formatValueForLog(locator, value)
+                + " pause=" + pauseTime + "ms");
         char ch[] = value.toCharArray();
         for (char c : ch) {
             act.sendKeys(getElement(locator), String.valueOf(c)).pause(pauseTime).perform();
@@ -401,6 +474,8 @@ public class ElementUtil {
      */
     public void doActionsSendKeysWithPause(By locator, String value) {
         Actions act = new Actions(driver);
+        logAction("Actions-typing into " + describeLocator(locator) + " value=" + formatValueForLog(locator, value)
+                + " pause=500ms");
         char ch[] = value.toCharArray();
         for (char c : ch) {
             act.sendKeys(getElement(locator), String.valueOf(c)).pause(500).perform();
@@ -416,6 +491,7 @@ public class ElementUtil {
         Actions act = new Actions(driver);
         Random random = new Random();
         WebElement element = getElement(locator);
+        logAction("Actions-typing numeric value into " + describeLocator(locator));
         // Clear the field using CTRL + A + BACKSPACE to ensure full wipe
         act.click(element)
                 .keyDown(Keys.CONTROL)
@@ -430,6 +506,7 @@ public class ElementUtil {
         }
         // Generate a random digit between 1 and 8
         int randomDigit = 9 + random.nextInt(5);
+        logAction("Generated numeric value " + randomDigit + " for " + describeLocator(locator));
 
         // Send the random digit as a string with pause
         act.sendKeys(getElement(locator), String.valueOf(randomDigit))
@@ -527,8 +604,11 @@ public class ElementUtil {
      * Normal WebDriver wait
      */
     public WebElement waitForElementVisible(By locator, int timeOut) {
+        logAction("Waiting up to " + timeOut + "s for visible element " + describeLocator(locator));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        WebElement element = wait.until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator)));
+        logAction("Visible element found " + describeLocator(locator));
+        return element;
 
     }
     /**
@@ -544,6 +624,8 @@ public class ElementUtil {
      */
     public  WebElement waitForElementVisible(By locator, int timeOut, int intervalTime) {
 
+        logAction("Fluent-waiting up to " + timeOut + "s for visible element " + describeLocator(locator)
+                + " polling every " + intervalTime + "s");
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
                 .withTimeout(Duration.ofSeconds(timeOut))
                 .pollingEvery(Duration.ofSeconds(intervalTime))
@@ -551,8 +633,18 @@ public class ElementUtil {
                 .withMessage("===element is not found===");
 
 
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        WebElement element = wait.until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator)));
+        logAction("Visible element found " + describeLocator(locator));
+        return element;
 
+    }
+
+    public WebElement waitForFreshVisibleElement(By locator, int timeOut) {
+        logAction("Waiting up to " + timeOut + "s for fresh visible element " + describeLocator(locator));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
+        WebElement element = wait.until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator)));
+        logAction("Fresh visible element found " + describeLocator(locator));
+        return element;
     }
 
     /**
@@ -744,8 +836,10 @@ public class ElementUtil {
 
     // ✅ Helper method to calculate next working day
     public LocalDate getNextWorkingDayExcludingWeekends(LocalDate currentDate) {
-        LocalDate fromDate = null;
-        LocalDate nextDay = fromDate.plusDays(1); // Start from tomorrow
+        if (currentDate == null) {
+            throw new IllegalArgumentException("currentDate cannot be null");
+        }
+        LocalDate nextDay = currentDate.plusDays(1); // Start from tomorrow
         while (nextDay.getDayOfWeek() == DayOfWeek.SATURDAY || nextDay.getDayOfWeek() == DayOfWeek.SUNDAY) {
             nextDay = nextDay.plusDays(1);
         }
@@ -754,15 +848,44 @@ public class ElementUtil {
     }
 
     public void clickStable(By locator, int timeoutSec) {
+        logAction("Stable-click on " + describeLocator(locator) + " timeout=" + timeoutSec + "s");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
-        WebElement el = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        WebElement el;
+        try {
+            el = wait.until(ExpectedConditions.refreshed(ExpectedConditions.elementToBeClickable(locator)));
+        } catch (TimeoutException timeoutException) {
+            logAction("Clickable wait timed out for " + describeLocator(locator) + ", falling back to visible element.");
+            el = wait.until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator)));
+        }
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block:'center'});", el);
-        // try native click, fallback to JS click if intercepted
+        clickElementWithFallback(el, locator);
+    }
+
+    private void clickElementWithFallback(WebElement el, By locator) {
         try {
             el.click();
         } catch (ElementClickInterceptedException e) {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+            logAction("Native click intercepted for " + describeLocator(locator) + ", trying Actions click first");
+            try {
+                new Actions(driver).moveToElement(el).pause(Duration.ofMillis(150)).click().perform();
+            } catch (Exception actionsException) {
+                logAction("Actions click failed for " + describeLocator(locator) + ", falling back to JS click");
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+            }
+        } catch (StaleElementReferenceException staleElementReferenceException) {
+            logAction("Element went stale while clicking " + describeLocator(locator) + ", retrying with fresh locator.");
+            WebElement freshElement = waitForFreshVisibleElement(locator, 5);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", freshElement);
+            try {
+                freshElement.click();
+            } catch (Exception freshClickException) {
+                try {
+                    new Actions(driver).moveToElement(freshElement).pause(Duration.ofMillis(150)).click().perform();
+                } catch (Exception ignored) {
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", freshElement);
+                }
+            }
         }
     }
 
@@ -775,26 +898,40 @@ public class ElementUtil {
      * - retries up to 2 times
      */
     public void enterTextReliable(By locator, String text, int timeoutSec) {
+        logAction("Reliable text entry into " + describeLocator(locator) + " value=" + formatValueForLog(locator, text)
+                + " timeout=" + timeoutSec + "s");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
         int attempts = 0;
 
         while (attempts < 3) {
-            WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            logAction("Text entry attempt " + (attempts + 1) + " for " + describeLocator(locator));
+            WebElement input = wait.until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator)));
             if (!input.isEnabled()) {
                 throw new IllegalStateException("Input not enabled for locator: " + locator);
             }
 
-            // focus + clear robustly
-            input.click();
-            input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-            input.sendKeys(Keys.DELETE);
+            focusElement(input, locator);
+            clearInputValue(input, locator);
 
             // type
-            input.sendKeys(text);
+            try {
+                input.sendKeys(text);
+            } catch (Exception typingException) {
+                logAction("sendKeys failed for " + describeLocator(locator) + ", using JavaScript value injection.");
+                setInputValueViaJavaScript(input, text);
+            }
 
             // verify input value (for <input type='password'> the value is present but masked in UI)
-            String value = input.getAttribute("value");
+            String value = safeReadInputValue(input);
             if (value != null && !value.isEmpty()) {
+                logAction("Text entry succeeded for " + describeLocator(locator));
+                return; // success
+            }
+
+            setInputValueViaJavaScript(input, text);
+            value = safeReadInputValue(wait.until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator))));
+            if (value != null && !value.isEmpty()) {
+                logAction("Text entry succeeded for " + describeLocator(locator) + " after JavaScript fallback.");
                 return; // success
             }
 
@@ -805,11 +942,570 @@ public class ElementUtil {
                 " after retries. The element may be losing focus or being re-rendered.");
     }
 
+    private void focusElement(WebElement element, By locator) {
+        try {
+            new Actions(driver).moveToElement(element).pause(Duration.ofMillis(100)).click().perform();
+            return;
+        } catch (Exception actionException) {
+            logAction("Actions focus failed for " + describeLocator(locator) + ", using JavaScript focus.");
+        }
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'}); arguments[0].focus();", element);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void clearInputValue(WebElement input, By locator) {
+        try {
+            input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+            input.sendKeys(Keys.DELETE);
+        } catch (Exception clearException) {
+            logAction("Keyboard clear failed for " + describeLocator(locator) + ", using JavaScript clear.");
+            setInputValueViaJavaScript(input, "");
+        }
+    }
+
+    private String safeReadInputValue(WebElement input) {
+        if (input == null) {
+            return "";
+        }
+        try {
+            String value = input.getAttribute("value");
+            if (value == null || value.trim().isEmpty()) {
+                value = input.getText();
+            }
+            return value == null ? "" : value.trim();
+        } catch (StaleElementReferenceException staleElementReferenceException) {
+            return "";
+        }
+    }
+
+    private void setInputValueViaJavaScript(WebElement input, String value) {
+        try {
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].value = arguments[1];" +
+                            "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
+                            "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+                    input,
+                    value
+            );
+        } catch (Exception ignored) {
+        }
+    }
+
     /**
      * Optional: waits for overlay/spinner to disappear
      */
     public void waitForOverlayToDisappear(By overlayLocator, int timeoutSec) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
         wait.until(ExpectedConditions.invisibilityOfElementLocated(overlayLocator));
+    }
+
+    public void logoutAndLoginWithMicrosoftAccount(By[] accountMenuCandidates,
+                                                   By[] logoutCandidates,
+                                                   By[] accountCandidates,
+                                                   By[] useAnotherAccountCandidates,
+                                                   By[] emailCandidates,
+                                                   By nextBtnLocator,
+                                                   By[] passwordCandidates,
+                                                   By signInBtnLocator,
+                                                   By[] staySignedInCandidates,
+                                                   String email,
+                                                   String password) {
+        logAction("Starting Microsoft logout/login flow.");
+        if (!isAnyVisible(emailCandidates) && !isAnyVisible(passwordCandidates)) {
+            dismissTransientMenus();
+            boolean accountMenuClicked = clickFirstVisible(accountMenuCandidates, 10);
+            By logoutLocator = waitForAnyVisibleLocator(logoutCandidates, 8);
+            if (logoutLocator == null) {
+                logAction("Logout option was not visible after the first account-menu click. Retrying with a fresh header state.");
+                dismissTransientMenus();
+                accountMenuClicked = clickFirstVisible(accountMenuCandidates, 10) || accountMenuClicked;
+                logoutLocator = waitForAnyVisibleLocator(logoutCandidates, 8);
+            }
+
+            if (!accountMenuClicked || logoutLocator == null) {
+                throw new IllegalStateException("Logout controls not visible/clickable. Cannot proceed with Microsoft login.");
+            }
+
+            logAction("Clicking logout option " + describeLocator(logoutLocator));
+            clickStable(logoutLocator, 10);
+        }
+
+        if (!isAnyVisible(emailCandidates) && !isAnyVisible(passwordCandidates)) {
+            logAction("Current account tile is visible, selecting it before switching account.");
+            clickFirstVisible(accountCandidates, 12);
+        }
+
+        List<By> postAccountStates = new ArrayList<>();
+        if (useAnotherAccountCandidates != null) {
+            postAccountStates.addAll(Arrays.asList(useAnotherAccountCandidates));
+        }
+        if (emailCandidates != null) {
+            postAccountStates.addAll(Arrays.asList(emailCandidates));
+        }
+        if (passwordCandidates != null) {
+            postAccountStates.addAll(Arrays.asList(passwordCandidates));
+        }
+
+        By stateLocator = waitForAnyVisibleLocator(postAccountStates.toArray(new By[0]), 18);
+        if (stateLocator == null) {
+            logAction("Account picker did not expose the expected state, retrying current account tile.");
+            clickFirstVisible(accountCandidates, 10);
+            stateLocator = waitForAnyVisibleLocator(postAccountStates.toArray(new By[0]), 18);
+        }
+        if (stateLocator != null && useAnotherAccountCandidates != null && Arrays.asList(useAnotherAccountCandidates).contains(stateLocator)) {
+            logAction("Clicking 'Use another account' tile " + describeLocator(stateLocator));
+            clickFirstVisible(useAnotherAccountCandidates, 12);
+        }
+
+        By emailLocator = waitForAnyVisibleLocator(emailCandidates, 20);
+        if (emailLocator == null && clickFirstVisible(useAnotherAccountCandidates, 10)) {
+            logAction("'Use another account' clicked while waiting for email field.");
+            emailLocator = waitForAnyVisibleLocator(emailCandidates, 15);
+        }
+        if (emailLocator == null && clickFirstVisible(accountCandidates, 10)) {
+            logAction("Account tile clicked while waiting for email field.");
+            emailLocator = waitForAnyVisibleLocator(emailCandidates, 15);
+        }
+
+        if (emailLocator == null) {
+            throw new IllegalStateException("Email field was not visible after account selection. " +
+                    "Current Microsoft picker state is not ready for sign-in.");
+        }
+
+        try {
+            logAction("Entering Microsoft email " + formatValueForLog(emailLocator, email));
+            enterTextReliable(emailLocator, email, 20);
+            logAction("Clicking Next after email entry.");
+            clickStable(nextBtnLocator, 15);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("Email field or Next button not available during sign-in.", te);
+        } catch (IllegalStateException ise) {
+            throw new IllegalStateException("Failed to enter email due to re-render/focus issues.", ise);
+        }
+
+        By passwordLocator = waitForAnyVisibleLocator(passwordCandidates, 20);
+        if (passwordLocator == null) {
+            throw new IllegalStateException("Password field was not visible after entering the email.");
+        }
+
+        try {
+            logAction("Entering Microsoft password " + formatValueForLog(passwordLocator, password));
+            WebElement pwdEl = waitForElementVisible(passwordLocator, 20);
+            if (!pwdEl.isDisplayed() || !pwdEl.isEnabled()) {
+                throw new IllegalStateException("Password field is present but not visible/enabled.");
+            }
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
+            enterTextReliable(passwordLocator, password, 20);
+
+            String pwdValue = driver.findElement(passwordLocator).getAttribute("value");
+            if (pwdValue == null || pwdValue.isEmpty()) {
+                throw new IllegalStateException("Password value did not stick after entry - UI may be re-rendering.");
+            }
+        } catch (TimeoutException te) {
+            throw new NoSuchElementException("Password field is not visible within timeout - login page may not have loaded, or an overlay is blocking.", te);
+        } catch (StaleElementReferenceException sere) {
+            WebElement pwdEl = waitForElementVisible(passwordLocator, 10);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", pwdEl);
+            enterTextReliable(passwordLocator, password, 10);
+        } catch (IllegalStateException ise) {
+            throw new IllegalStateException("Failed to enter password: " + ise.getMessage(), ise);
+        }
+
+        try {
+            logAction("Clicking Sign In.");
+            clickStable(signInBtnLocator, 20);
+        } catch (TimeoutException te) {
+            throw new IllegalStateException("Sign-in button not clickable. An overlay or validation error might be blocking.", te);
+        }
+
+        if (staySignedInCandidates != null && staySignedInCandidates.length > 0) {
+            logAction("Checking for stay-signed-in prompt.");
+            By staySignedInLocator = waitForAnyVisibleLocator(staySignedInCandidates, 10);
+            if (staySignedInLocator != null) {
+                logAction("Clicking stay-signed-in option " + describeLocator(staySignedInLocator));
+                clickStable(staySignedInLocator, 12);
+            }
+        }
+    }
+
+    private void dismissTransientMenus() {
+        try {
+            new Actions(driver).sendKeys(Keys.ESCAPE).pause(Duration.ofMillis(150)).perform();
+            logAction("Dismissed transient menu with ESC.");
+        } catch (Exception ignored) {
+        }
+        try {
+            ((JavascriptExecutor) driver).executeScript(
+                    "if (document && document.body) { document.body.dispatchEvent(new MouseEvent('click', {bubbles:true})); }"
+            );
+            logAction("Issued a body click to close any open popovers.");
+        } catch (Exception ignored) {
+        }
+    }
+
+    public boolean clickFirstVisibleAccount(List<By> locators, int timeoutSeconds) {
+        if (locators == null || locators.isEmpty()) {
+            return false;
+        }
+        logAction("Clicking first visible account candidate from " + locators.size() + " options.");
+        return clickFirstVisible(locators.toArray(new By[0]), timeoutSeconds);
+    }
+
+    public boolean isAnyVisible(By[] locators) {
+        if (locators == null) {
+            return false;
+        }
+        for (By locator : locators) {
+            if (locator == null) {
+                continue;
+            }
+            try {
+                if (isElementVisible(locator, 2)) {
+                    return true;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return false;
+    }
+
+    public boolean waitForAnyVisible(By[] locators, int timeoutSec) {
+        return waitForAnyVisibleLocator(locators, timeoutSec) != null;
+    }
+
+    public By waitForAnyVisibleLocator(By[] locators, int timeoutSec) {
+        if (locators == null || locators.length == 0) {
+            return null;
+        }
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
+        try {
+            return wait.until(d -> {
+                for (By locator : locators) {
+                    if (locator == null) {
+                        continue;
+                    }
+                    try {
+                        List<WebElement> elements = d.findElements(locator);
+                        for (WebElement element : elements) {
+                            try {
+                                if (element.isDisplayed()) {
+                                    return locator;
+                                }
+                            } catch (StaleElementReferenceException stale) {
+                                logAction("Ignoring stale element while checking visibility for " + describeLocator(locator));
+                            }
+                        }
+                    } catch (StaleElementReferenceException stale) {
+                        logAction("Ignoring stale locator while checking visibility for " + describeLocator(locator));
+                    }
+                }
+                return null;
+            });
+        } catch (TimeoutException e) {
+            return null;
+        }
+    }
+
+    public void waitForAppLanding() {
+        logAction("Waiting for application landing markers after Microsoft sign-in.");
+        By[] landingMarkers = {
+                By.xpath("//input[@placeholder='Search']"),
+                By.xpath("//*[name()='svg' and @data-testid='AddTaskIcon']"),
+                By.cssSelector(".css-odsz1v")
+        };
+        By landingMarker = waitForAnyVisibleLocator(landingMarkers, 20);
+        if (landingMarker == null) {
+            throw new IllegalStateException("Application did not load after alternate account sign-in.");
+        }
+        logAction("Application landing detected via " + describeLocator(landingMarker));
+    }
+
+    /**
+     * Checks whether the OptiWise landing shell is already visible.
+     * This is useful when Microsoft redirects directly into an active app session.
+     */
+    public boolean isApplicationLandingVisible() {
+        By[] landingMarkers = {
+                By.xpath("//input[@placeholder='Search']"),
+                By.xpath("//*[name()='svg' and @data-testid='AddTaskIcon']"),
+                By.cssSelector(".css-odsz1v")
+        };
+        return waitForAnyVisible(landingMarkers, 2);
+    }
+
+    /**
+     * Opens the email-entry step when Microsoft shows a saved-account picker first.
+     * The method handles fresh browsers, saved sessions, and already-visible password states.
+     */
+    public void openMicrosoftEmailStepIfAccountPickerIsVisible(By emailInputField,
+                                                               By useOtherAccount,
+                                                               By passwordInputField,
+                                                               int timeoutSeconds) {
+        if (isElementVisible(emailInputField, 5)) {
+            logAction("Microsoft email field is already visible.");
+            return;
+        }
+
+        logAction("Resolving Microsoft account-picker state before entering credentials.");
+        By otherTile = By.id("otherTile");
+        By otherTileText = By.id("otherTileText");
+        By pickAccountHeading = By.xpath("//*[normalize-space()='Pick an account']");
+        By[] preLoginStates = {
+                emailInputField,
+                useOtherAccount,
+                otherTile,
+                otherTileText,
+                pickAccountHeading,
+                passwordInputField,
+                By.xpath("//input[@placeholder='Search']"),
+                By.xpath("//*[name()='svg' and @data-testid='AddTaskIcon']"),
+                By.cssSelector(".css-odsz1v")
+        };
+
+        By stateLocator = waitForAnyVisibleLocator(preLoginStates, timeoutSeconds);
+        if (stateLocator == null) {
+            throw new IllegalStateException("Unable to determine the Microsoft sign-in state before entering credentials.");
+        }
+
+        if (isApplicationLandingVisible()) {
+            logAction("Application landing became visible while resolving account picker.");
+            return;
+        }
+
+        if (matchesLocator(stateLocator, passwordInputField)) {
+            logAction("Microsoft password field is already visible.");
+            return;
+        }
+
+        if (matchesLocator(stateLocator, emailInputField)) {
+            logAction("Microsoft email field became visible.");
+            return;
+        }
+
+        if (matchesLocator(stateLocator, useOtherAccount)
+                || matchesLocator(stateLocator, otherTile)
+                || matchesLocator(stateLocator, otherTileText)
+                || matchesLocator(stateLocator, pickAccountHeading)) {
+            logAction("Microsoft account picker detected. Clicking 'Use another account'.");
+            List<By> useAnotherAccountCandidates = Arrays.asList(
+                    By.xpath("//*[contains(normalize-space(.),'Use another account') or contains(normalize-space(.),'Add another account')]/ancestor::*[self::button or self::li or self::div[@role='button'] or self::div[@role='option'] or self::div[@id='otherTile']][1]"),
+                    otherTile,
+                    otherTileText,
+                    useOtherAccount
+            );
+            boolean clicked = clickFirstVisibleAccount(useAnotherAccountCandidates, timeoutSeconds);
+            if (!clicked) {
+                throw new IllegalStateException("'Use another account' option was visible but could not be clicked.");
+            }
+        }
+    }
+
+    /**
+     * Handles the Microsoft post-password submit/KMSI prompt only for environments that expose it.
+     */
+    public void handleMicrosoftPostPasswordSubmitPrompt(By submitButton,
+                                                        boolean skipPrompt,
+                                                        int timeoutSeconds) {
+        if (skipPrompt) {
+            logAction("Skipping Microsoft post-password submit prompt for this environment.");
+            return;
+        }
+
+        if (isElementVisible(submitButton, timeoutSeconds)) {
+            logAction("Microsoft post-password submit prompt visible. Clicking submit button.");
+            clickStable(submitButton, timeoutSeconds);
+            return;
+        }
+
+        logAction("Microsoft post-password submit prompt was not visible. Continuing to application landing.");
+    }
+
+    /**
+     * Waits for the Microsoft password input after the email step and recovers from transient
+     * Edge network error pages such as ERR_CONNECTION_RESET, which can appear in CI or flaky VPN sessions.
+     */
+    public By waitForMicrosoftPasswordInputAfterEmail(By passwordInputField, int timeoutSeconds) {
+        int attempts = 3;
+        for (int attempt = 1; attempt <= attempts; attempt++) {
+            int waitSeconds = attempt == 1 ? timeoutSeconds : Math.max(8, timeoutSeconds / 2);
+            By passwordLocator = waitForAnyVisibleLocator(new By[]{passwordInputField}, waitSeconds);
+            if (passwordLocator != null) {
+                return passwordLocator;
+            }
+
+            if (!isEdgeNetworkErrorPageVisible()) {
+                break;
+            }
+
+            logAction("Edge network error page detected while waiting for Microsoft password input. "
+                    + "Refreshing auth page. Attempt " + attempt + " of " + attempts + ".");
+            refreshCurrentPageFromBrowserError();
+        }
+
+        throw new IllegalStateException("Microsoft password input did not become visible after entering the email. "
+                + "Current title='" + driver.getTitle() + "', currentUrl='" + driver.getCurrentUrl() + "'.");
+    }
+
+    /**
+     * Detects Edge/Chromium network error pages so login can fail clearly or retry safely.
+     */
+    public boolean isEdgeNetworkErrorPageVisible() {
+        By[] networkErrorMarkers = {
+                By.id("main-frame-error"),
+                By.cssSelector(".error-code"),
+                By.xpath("//*[contains(normalize-space(.),'ERR_CONNECTION_RESET')]"),
+                By.xpath("//*[contains(normalize-space(.),\"can't reach this page\")]"),
+                By.xpath("//*[contains(normalize-space(.),'The connection was reset')]")
+        };
+        return waitForAnyVisible(networkErrorMarkers, 1);
+    }
+
+    private void refreshCurrentPageFromBrowserError() {
+        By[] refreshCandidates = {
+                By.id("reload-button"),
+                By.xpath("//button[normalize-space()='Refresh']")
+        };
+        if (!clickFirstVisible(refreshCandidates, 4)) {
+            driver.navigate().refresh();
+        }
+    }
+
+    /**
+     * PROD does not expose the extra submit/KMSI prompt in the current RMT login path.
+     */
+    public boolean shouldSkipMicrosoftPostPasswordSubmitPromptForCurrentEnvironment() {
+        String envName = System.getProperty("env", "uat");
+        if (envName == null || envName.trim().isEmpty()) {
+            envName = "uat";
+        }
+        return "prod".equalsIgnoreCase(envName.trim().toLowerCase(Locale.ENGLISH));
+    }
+
+    /**
+     * Completes the post-login Microsoft prompt when it appears and waits until the OptiWise landing markers
+     * are visible. This keeps local and CI runs resilient when Microsoft inserts a KMSI step between
+     * credential submission and the application shell.
+     */
+    public void ensureApplicationLandingAfterLogin() {
+        logAction("Ensuring OptiWise application landing after login.");
+        By[] landingMarkers = {
+                By.xpath("//input[@placeholder='Search']"),
+                By.xpath("//*[name()='svg' and @data-testid='AddTaskIcon']"),
+                By.cssSelector(".css-odsz1v"),
+                By.xpath("//button[contains(@aria-label,'account')]")
+        };
+        if (waitForAnyVisible(landingMarkers, 4)) {
+            logAction("Application markers are already visible.");
+            return;
+        }
+
+        resolveStaySignedInPromptIfPresent();
+
+        By landingMarker = waitForAnyVisibleLocator(landingMarkers, 25);
+        if (landingMarker != null) {
+            logAction("Application landing confirmed via " + describeLocator(landingMarker));
+            return;
+        }
+
+        throwIfBlockingMicrosoftChallengeIsVisible();
+
+        throw new IllegalStateException("Application landing was not reached after login. Current title='"
+                + driver.getTitle() + "', currentUrl='" + driver.getCurrentUrl() + "'.");
+    }
+
+    /**
+     * Detects interactive Microsoft challenges that cannot be completed in unattended automation, such as
+     * Authenticator push approval. Surfacing the blocker explicitly makes CI/CD failures easier to diagnose.
+     */
+    private void throwIfBlockingMicrosoftChallengeIsVisible() {
+        By[] authenticatorChallengeMarkers = {
+                By.id("idDiv_SAOTCAS_Description"),
+                By.xpath("//*[contains(normalize-space(.),'Open your Authenticator app')]"),
+                By.xpath("//*[contains(normalize-space(.),\"I can't use my Microsoft Authenticator app right now\")]"),
+                By.id("idRichContext_DisplaySign")
+        };
+
+        By blockingMarker = waitForAnyVisibleLocator(authenticatorChallengeMarkers, 3);
+        if (blockingMarker == null) {
+            return;
+        }
+
+        throw new IllegalStateException("Microsoft Authenticator approval is blocking the login flow. "
+                + "Use a CI-safe account or disable interactive MFA for unattended PROD execution. "
+                + "Current title='" + driver.getTitle() + "', currentUrl='" + driver.getCurrentUrl() + "'.");
+    }
+
+    /**
+     * Handles Microsoft "Stay signed in?" prompts using the safest visible continuation button.
+     */
+    private void resolveStaySignedInPromptIfPresent() {
+        By[] kmsiMarkers = {
+                By.id("KmsiDescription"),
+                By.id("idSIButton9"),
+                By.id("idBtn_Back"),
+                By.xpath("//*[contains(normalize-space(.),'Stay signed in')]"),
+                By.xpath("//input[@name='DontShowAgain']/ancestor::label[1]")
+        };
+        By kmsiMarker = waitForAnyVisibleLocator(kmsiMarkers, 5);
+        if (kmsiMarker == null) {
+            return;
+        }
+
+        logAction("Microsoft KMSI prompt detected via " + describeLocator(kmsiMarker));
+        By[] declineCandidates = {
+                By.id("idBtn_Back"),
+                By.xpath("//input[@value='No']"),
+                By.xpath("//button[normalize-space()='No']")
+        };
+        By[] acceptCandidates = {
+                By.id("idSIButton9"),
+                By.xpath("//input[@value='Yes']"),
+                By.xpath("//button[normalize-space()='Yes']")
+        };
+
+        if (clickFirstVisible(declineCandidates, 5)) {
+            logAction("Dismissed KMSI prompt using the 'No' action.");
+            return;
+        }
+        if (clickFirstVisible(acceptCandidates, 5)) {
+            logAction("Continued through KMSI prompt using the 'Yes' action.");
+        }
+    }
+
+    private boolean clickFirstVisible(By[] locators, int timeoutSec) {
+        if (locators == null) {
+            return false;
+        }
+        for (By locator : locators) {
+            if (locator == null) {
+                continue;
+            }
+            try {
+                if (!isElementVisible(locator, timeoutSec)) {
+                    continue;
+                }
+                clickStable(locator, timeoutSec);
+                return true;
+            } catch (Exception ignored) {
+                try {
+                    WebElement element = waitForElementVisible(locator, timeoutSec);
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+                    return true;
+                } catch (Exception ignoredToo) {
+                    // Try the next locator candidate.
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean matchesLocator(By actualLocator, By expectedLocator) {
+        if (actualLocator == null || expectedLocator == null) {
+            return false;
+        }
+        return actualLocator.toString().equals(expectedLocator.toString());
     }
 }

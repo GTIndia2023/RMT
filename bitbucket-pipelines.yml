@@ -1,0 +1,26 @@
+image: maven:3.9.9-eclipse-temurin-21
+
+pipelines:
+  default:
+    - step:
+        name: Run Tests + Generate CI Summary + Allure + Email
+        runs-on:
+          - self.hosted
+          - linux.shell
+
+        script:
+          - TEST_EXIT_CODE=0
+          - mvn clean test -Denv=uat -Dbrowser=chrome -Dheadless=true || TEST_EXIT_CODE=$?
+          - if [ -d allure-results ]; then rm -rf allure-report && allure generate --config ./allurerc.mjs allure-results -o allure-report; fi
+          - python3 ci/generate_ci_summary.py
+          - if [ -d allure-report ]; then zip -r allure-report.zip allure-report; fi
+          - if [ -n "${EMAIL_USER:-}" ] && [ -n "${EMAIL_PASS:-}" ] && [ -n "${EMAIL_TO:-}" ] && [ -f allure-report.zip ]; then python3 send_mail.py; else echo "Skipping email because email variables or allure-report.zip are missing."; fi
+          - exit $TEST_EXIT_CODE
+
+        artifacts:
+          - artifacts/ci/**
+          - allure-results/**
+          - allure-report.zip
+          - allure-report/**
+          - test_Logs/**
+          - target/surefire-reports/**

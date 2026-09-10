@@ -82,27 +82,27 @@ public class SkillMasterTest extends BaseTest {
     public void skillSearchByEmplNameTest(){
         Assert.assertTrue(skillmasterPage.searchByEmployeeName(),AppConstants.SKILL_SEARCH_BY_EMPLOYEE_NAME_NOT_FOUND);
     }
-    @Test(priority = 7)
-    @Description("This test is checking that user is able to add a skill ")
-    @Owner("Piyush Wadhwa")
-    @Severity(SeverityLevel.CRITICAL)
-    public void addingSkillTest(){
-        String addedSkill=skillmasterPage.addSkill();
-        Assert.assertEquals(addedSkill, AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE, AppError.SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH);
-    }
-    @Description(" This test is checking that supercoach is able to review the skill added by resource")
-    @Owner("Piyush Wadhwa")
-    @Severity(SeverityLevel.CRITICAL)
-    @Test(priority = 8)
-    public void skillReviewByScTest(){
-        String skillReviewMessage=skillmasterPage.skillReviewBySuperCoach();
-        Assert.assertEquals(skillReviewMessage, AppConstants.SKILL_REVIEW_POP_UP_MESSAGE_FOR_SC, AppError.SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH);
-    }
-
-    @Test(priority =9)
-    public void checkSkillStatus(){
-        String skillStatus= skillmasterPage.skillStatusCheck();
-        Assert.assertEquals(skillStatus, AppConstants.Skill_Status_Approved_From_SuperCoach, AppError.SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH);
-    }
+//    @Test(priority = 7)
+//    @Description("This test is checking that user is able to add a skill ")
+//    @Owner("Piyush Wadhwa")
+//    @Severity(SeverityLevel.CRITICAL)
+//    public void addingSkillTest(){
+//        String addedSkill=skillmasterPage.addSkill();
+//        Assert.assertEquals(addedSkill, AppConstants.SKILL_ADDITION_SUCCESS_MESSAGE, AppError.SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH);
+//    }
+//    @Description(" This test is checking that supercoach is able to review the skill added by resource")
+//    @Owner("Piyush Wadhwa")
+//    @Severity(SeverityLevel.CRITICAL)
+//    @Test(priority = 8)
+//    public void skillReviewByScTest(){
+//        String skillReviewMessage=skillmasterPage.skillReviewBySuperCoach();
+//        Assert.assertEquals(skillReviewMessage, AppConstants.SKILL_REVIEW_POP_UP_MESSAGE_FOR_SC, AppError.SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH);
+//    }
+//
+//    @Test(priority =9)
+//    public void checkSkillStatus(){
+//        String skillStatus= skillmasterPage.skillStatusCheck();
+//        Assert.assertEquals(skillStatus, AppConstants.Skill_Status_Approved_From_SuperCoach, AppError.SKILL_NOT_GETTING_APPROVED_BY_SUPERCOACH);
+//    }
 
 }

@@ -20,12 +20,17 @@ public class LoginPage {
     }
 
     //2.By locators
-    private By emaiInputField=By.xpath("//input[@type='email']");
-    private By passwordInputField=By.xpath("//input[@name='passwd']");
-    private By nextBtn= By.xpath("//input[@type='submit']");
-    private By signInBtn= By.xpath("//input[@type='submit']");
+    private By emaiInputField=By.xpath("//input[@type='email' or @name='loginfmt' or @id='i0116']");
+    private By passwordInputField=By.xpath("//input[@type='password' or @name='passwd' or @id='i0118']");
+    private By nextBtn= By.xpath("//input[@type='submit' or @id='idSIButton9' or @value='Next' or @value='Sign in']");
+    private By signInBtn= By.xpath("//input[@type='submit' or @id='idSIButton9' or @value='Sign in' or @value='Next']");
     private By forgotPassword=By.xpath("//a[@id='idA_PWD_ForgotPassword']");
-    private By submitBtn= By.xpath("//input[@type='submit']");
+    private By submitBtn= By.xpath("//input[@type='submit' or @id='idSIButton9' or @value='Yes' or @value='Next' or @value='Sign in']");
+    private By clickOnUseOtherAccount = By.xpath("//*[contains(normalize-space(.),'Use another account') or contains(normalize-space(.),'Add another account')]");
+
+    private void logAction(String message) {
+        System.out.println("[LoginPage] " + message);
+    }
 
 
     //3. Page actions
@@ -59,30 +64,36 @@ public class LoginPage {
      */
     @Step("Login the Application wih username: {0} and password: ********")
     public ProjectListingsPage doLogin(String un , String pswd){
-        try {
-            Thread.sleep(18000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        logAction("Starting Microsoft login flow.");
+        if (eleutil.isApplicationLandingVisible()) {
+            logAction("Application landing is already visible. Reusing the active session.");
+            return new ProjectListingsPage(driver);
         }
-        eleutil.doSendKeys(emaiInputField,un,TimeUtil.DEFAULT_TIME_OUT);
-        eleutil.doClick(nextBtn,TimeUtil.DEFAULT_TIME_OUT);
-        eleutil.doSendKeys(passwordInputField,pswd,TimeUtil.DEFAULT_TIME_OUT);
-        eleutil.doClick(signInBtn,TimeUtil.DEFAULT_TIME_OUT);
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-            eleutil.doClick(submitBtn,TimeUtil.MEDIUM_TIME_OUT);
 
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        eleutil.openMicrosoftEmailStepIfAccountPickerIsVisible(
+                emaiInputField,
+                clickOnUseOtherAccount,
+                passwordInputField,
+                TimeUtil.LONG_TIME_OUT
+        );
+        By emailLocator = eleutil.waitForAnyVisibleLocator(new By[]{emaiInputField}, TimeUtil.LONG_TIME_OUT);
+        if (emailLocator == null) {
+            throw new IllegalStateException("Microsoft email input did not become visible after account selection.");
         }
+        eleutil.enterTextReliable(emailLocator, un, TimeUtil.LONG_TIME_OUT);
+        eleutil.clickStable(nextBtn, TimeUtil.MEDIUM_TIME_OUT);
+
+        By passwordLocator = eleutil.waitForMicrosoftPasswordInputAfterEmail(passwordInputField, TimeUtil.LONG_TIME_OUT);
+        eleutil.enterTextReliable(passwordLocator, pswd, TimeUtil.LONG_TIME_OUT);
+        eleutil.clickStable(signInBtn, TimeUtil.MEDIUM_TIME_OUT);
+        eleutil.handleMicrosoftPostPasswordSubmitPrompt(
+                submitBtn,
+                eleutil.shouldSkipMicrosoftPostPasswordSubmitPromptForCurrentEnvironment(),
+                TimeUtil.MEDIUM_TIME_OUT
+        );
+        eleutil.ensureApplicationLandingAfterLogin();
         return new ProjectListingsPage(driver);
 
     }
-
 
 }
