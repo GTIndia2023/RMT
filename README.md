@@ -499,9 +499,9 @@ Use a CI-safe test account. Interactive Microsoft Authenticator approval and oth
 
 ## GitHub Actions
 
-The workflow at `.github/workflows/rmt-ci.yml` compiles the project on every pull request and push to `master`. It does not run state-changing UAT UI tests automatically.
+The workflow at `.github/workflows/rmt-ci.yml` compiles the project and runs the headless UAT sanity suite on every push and on every pull request targeting `master`. The UAT job uses a shared concurrency lock so state-changing runs never overlap.
 
-To enable the manual UAT sanity run, create a GitHub Environment named `uat` and add these environment secrets:
+Before the first run, create a GitHub Environment named `uat` and add these environment secrets:
 
 ```text
 RMT_URL
@@ -515,7 +515,7 @@ DB_PASSWORD
 ALLOCATION_VALIDATION_QUERY
 ```
 
-Open **Actions**, select **RMT Java CI**, click **Run workflow**, and enable `run_uat_ui_tests`. The run uses Edge in headless mode and uploads Surefire reports, test logs, Allure results, and the CI summary as a downloadable artifact.
+Open **Actions**, select **RMT Java CI**, and click **Run workflow** to execute the suite on demand. Every automated run uses Edge in headless mode and uploads Surefire reports, test logs, Allure results, and the CI summary as a downloadable artifact.
 
 ## MCP Integration
 
