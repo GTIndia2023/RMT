@@ -2,16 +2,9 @@ name: RMT Java CI
 
 on:
   push:
-    branches: [master]
   pull_request:
     branches: [master]
   workflow_dispatch:
-    inputs:
-      run_uat_ui_tests:
-        description: Run the UAT Selenium sanity suite with GitHub environment secrets.
-        required: true
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -45,10 +38,13 @@ jobs:
   uat-sanity:
     name: Run UAT Selenium Sanity Suite
     needs: compile
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_uat_ui_tests }}
     runs-on: windows-latest
     environment: uat
     timeout-minutes: 45
+    # The suite changes shared UAT data, so executions must never overlap.
+    concurrency:
+      group: rmt-shared-uat-sanity
+      cancel-in-progress: false
     env:
       RMT_URL: ${{ secrets.RMT_URL }}
       RMT_USERNAME: ${{ secrets.RMT_USERNAME }}
